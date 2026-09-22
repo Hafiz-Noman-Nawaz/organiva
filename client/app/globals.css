@@ -1,0 +1,377 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bg-primary: #FAF8F5;
+  --bg-card: #FFFFFF;
+  --text-main: #171A18;
+  --text-muted: #656C66;
+  --organiva-sage: #5B755D;
+  --organiva-sage-dark: #435845;
+  --organiva-sage-light: #EBF1EB;
+  --organiva-forest: #1A2E1D;
+  --organiva-sand: #F3EFE9;
+  --organiva-border: rgba(91, 117, 93, 0.14);
+}
+
+.dark,
+[data-theme="dark"],
+html.dark {
+  --bg-primary: #0A120B;
+  --bg-card: #132115;
+  --text-main: #F5FAF5;
+  --text-muted: #A9BCA9;
+  --organiva-sage: #8ED496;
+  --organiva-sage-dark: #5B755D;
+  --organiva-sage-light: #1A2D1D;
+  --organiva-forest: #050B06;
+  --organiva-sand: #142116;
+  --organiva-border: rgba(125, 172, 130, 0.22);
+}
+
+/* ==========================================================================
+   HIGH-CONTRAST PREMIUM DARK THEME OVERRIDES
+   ========================================================================== */
+html.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html.dark body,
+[data-theme="dark"] body {
+  background-color: #0A120B !important;
+  color: #F5FAF5 !important;
+}
+
+/* Canvas backgrounds */
+html.dark [class*="bg-[#FAF8F5]"],
+html.dark [class*="bg-[#FAF9F6]"],
+html.dark [class*="bg-[#F8FAF8]"],
+html.dark [class*="bg-[#F9FBF9]"],
+html.dark [class*="bg-[#F7F5F0]"],
+html.dark [class*="bg-[#F3EFE9]"],
+[data-theme="dark"] [class*="bg-[#FAF8F5]"],
+[data-theme="dark"] [class*="bg-[#FAF9F6]"],
+[data-theme="dark"] [class*="bg-[#F8FAF8]"],
+[data-theme="dark"] [class*="bg-[#F9FBF9]"],
+[data-theme="dark"] [class*="bg-[#F7F5F0]"],
+[data-theme="dark"] [class*="bg-[#F3EFE9]"] {
+  background-color: #0A120B !important;
+}
+
+/* Translucent headers and overlays */
+html.dark [class*="bg-[#FAF8F5]/"],
+html.dark [class*="bg-[#FAF9F6]/"],
+[data-theme="dark"] [class*="bg-[#FAF8F5]/"],
+[data-theme="dark"] [class*="bg-[#FAF9F6]/"] {
+  background-color: rgba(10, 18, 11, 0.94) !important;
+}
+
+/* Surface Cards */
+html.dark .bg-white,
+[data-theme="dark"] .bg-white {
+  background-color: #132115 !important;
+}
+
+html.dark [class*="bg-white/"],
+[data-theme="dark"] [class*="bg-white/"] {
+  background-color: rgba(19, 33, 21, 0.94) !important;
+}
+
+/* Secondary / Elevated Containers */
+html.dark [class*="bg-[#EBF1EB]"],
+html.dark [class*="bg-[#E8F8EE]"],
+html.dark [class*="bg-gray-50"],
+html.dark [class*="bg-gray-100"],
+html.dark [class*="bg-neutral-50"],
+html.dark [class*="bg-neutral-100"],
+[data-theme="dark"] [class*="bg-[#EBF1EB]"],
+[data-theme="dark"] [class*="bg-[#E8F8EE]"],
+[data-theme="dark"] [class*="bg-gray-50"],
+[data-theme="dark"] [class*="bg-gray-100"] {
+  background-color: #1A2D1D !important;
+}
+
+/* Text High Contrast Overrides */
+html.dark [class*="text-[#171A18]"],
+html.dark [class*="text-[#1A2E1D]"],
+html.dark [class*="text-[#111827]"],
+html.dark [class*="text-[#2E332F]"],
+html.dark [class*="text-neutral-900"],
+html.dark [class*="text-gray-900"],
+html.dark [class*="text-black"],
+[data-theme="dark"] [class*="text-[#171A18]"],
+[data-theme="dark"] [class*="text-[#1A2E1D]"],
+[data-theme="dark"] [class*="text-[#111827]"],
+[data-theme="dark"] [class*="text-[#2E332F]"],
+[data-theme="dark"] [class*="text-neutral-900"],
+[data-theme="dark"] [class*="text-gray-900"] {
+  color: #F5FAF5 !important;
+}
+
+/* Muted / Secondary Body Text */
+html.dark [class*="text-[#525B54]"],
+html.dark [class*="text-[#656C66]"],
+html.dark [class*="text-[#7F8681]"],
+html.dark [class*="text-neutral-600"],
+html.dark [class*="text-neutral-500"],
+html.dark [class*="text-gray-600"],
+html.dark [class*="text-gray-500"],
+[data-theme="dark"] [class*="text-[#525B54]"],
+[data-theme="dark"] [class*="text-[#656C66]"],
+[data-theme="dark"] [class*="text-[#7F8681]"] {
+  color: #A9BCA9 !important;
+}
+
+/* Accent Sage Text (Brightened for high contrast readability on dark) */
+html.dark [class*="text-[#435845]"],
+html.dark [class*="text-[#5B755D]"],
+[data-theme="dark"] [class*="text-[#435845]"],
+[data-theme="dark"] [class*="text-[#5B755D]"] {
+  color: #8ED496 !important;
+}
+
+html.dark [class*="text-[#1B7032]"],
+[data-theme="dark"] [class*="text-[#1B7032]"] {
+  color: #6EE787 !important;
+}
+
+/* Borders and Dividers */
+html.dark [class*="border-[#5B755D]"],
+html.dark [class*="border-[#E2ECE3]"],
+html.dark [class*="border-[#EBF1EB]"],
+html.dark [class*="border-gray-100"],
+html.dark [class*="border-gray-200"],
+html.dark [class*="border-neutral-200"],
+[data-theme="dark"] [class*="border-[#5B755D]"],
+[data-theme="dark"] [class*="border-[#E2ECE3]"],
+[data-theme="dark"] [class*="border-[#EBF1EB]"] {
+  border-color: rgba(125, 172, 130, 0.22) !important;
+}
+
+/* Cards & Surfaces */
+html.dark .organiva-card,
+[data-theme="dark"] .organiva-card {
+  background-color: #132115 !important;
+  border-color: rgba(125, 172, 130, 0.22) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
+}
+
+html.dark .organiva-card:hover,
+[data-theme="dark"] .organiva-card:hover {
+  border-color: rgba(142, 212, 150, 0.45) !important;
+  box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Form Fields & Interactive Inputs */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select,
+[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: #152417 !important;
+  color: #F5FAF5 !important;
+  border-color: rgba(125, 172, 130, 0.3) !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder,
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: #728475 !important;
+}
+
+/* Hover highlights */
+html.dark .hover\:bg-black\/5:hover,
+html.dark [class*="hover:bg-black/5"]:hover,
+[data-theme="dark"] .hover\:bg-black\/5:hover,
+[data-theme="dark"] [class*="hover:bg-black/5"]:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #F5FAF5 !important;
+}
+
+/* Dark Scrollbar */
+html.dark ::-webkit-scrollbar-track,
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #0A120B !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb,
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #253A27 !important;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #436346 !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+
+/* Custom Sleek Scrollbar - "Unique but adjusted, not out of league" */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F3EFE9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B2C2B3;
+  border-radius: 9999px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5B755D;
+}
+
+/* Custom Sleek Selectors & Inputs */
+select, input, textarea {
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B755D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.1em;
+}
+
+/* Subtle Shimmer & Glow Utilities */
+@keyframes organivaFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float-subtle {
+  animation: organivaFloat 5s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Orgi Character Movements & Animations */
+@keyframes orgiScanner {
+  0%, 100% { transform: translateY(0px); opacity: 0.3; }
+  50% { transform: translateY(22px); opacity: 1; }
+}
+
+.animate-scanner {
+  animation: orgiScanner 1.8s ease-in-out infinite;
+}
+
+@keyframes orgiSway {
+  0%, 100% { transform: rotate(0deg); }
+  33% { transform: rotate(10deg); }
+  66% { transform: rotate(-8deg); }
+}
+
+.animate-sway {
+  animation: orgiSway 2s ease-in-out infinite;
+  transform-origin: 48px 20px;
+}
+
+@keyframes orgiVoiceBars {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+  50% { transform: scaleY(1.4); opacity: 1; }
+}
+
+.animate-voice-bars rect {
+  transform-origin: center;
+  animation: orgiVoiceBars 0.6s ease-in-out infinite alternate;
+}
+.animate-voice-bars rect:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.animate-voice-bars rect:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes orgiBob {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-1.5deg); }
+  75% { transform: translateY(1px) rotate(1.5deg); }
+}
+
+.animate-bob {
+  animation: orgiBob 1.2s ease-in-out infinite;
+}
+
+@keyframes orgiBounceSubtle {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-4px) scale(1.02); }
+}
+
+.animate-bounce-subtle {
+  animation: orgiBounceSubtle 2s ease-in-out infinite;
+}
+
+@keyframes orgiSpinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: orgiSpinSlow 8s linear infinite;
+}
+
+/* Glassmorphic DTC card */
+.organiva-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(91, 117, 93, 0.12);
+  box-shadow: 0 4px 20px -2px rgba(27, 46, 29, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.organiva-card:hover {
+  border-color: rgba(91, 117, 93, 0.28);
+  box-shadow: 0 12px 32px -4px rgba(27, 46, 29, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Custom button states */
+.btn-primary {
+  background-color: #5B755D;
+  color: #FFFFFF;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #485E4A;
+  box-shadow: 0 6px 18px rgba(91, 117, 93, 0.28);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}

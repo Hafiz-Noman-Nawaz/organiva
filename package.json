@@ -1,0 +1,11 @@
+{
+  "name": "organiva-root",
+  "version": "1.0.0",
+  "description": "Organiva — Pakistani DTC Smart Products E-Commerce Platform",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:server": "cd server && npm run build",
+    "build:client": "cd client && npm run build"
+  }
+}

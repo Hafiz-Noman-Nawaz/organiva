@@ -1,0 +1,21 @@
+# Node modules
+node_modules/
+
+# Compiled outputs
+dist/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# MongoDB in-memory downloads cache
+.cache/
+
+# Local database data
+data/
+
