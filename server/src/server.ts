@@ -64,6 +64,23 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Root welcome route
+app.get('/', (req, res) => {
+  res.json({
+    name: 'Organiva E-Commerce Backend API',
+    status: 'online',
+    tagline: 'Smart products. Simpler living.',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      products: '/api/products',
+      categories: '/api/categories',
+      shippingRule: '/api/orders/shipping-rule',
+      aiChat: '/api/ai/chat',
+    },
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({
