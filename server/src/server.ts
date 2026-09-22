@@ -141,7 +141,6 @@ const startServer = async () => {
   try {
     await connectDB();
     await autoSeedIfEmpty();
-    await updateHomeOrganizationCatalog();
 
     const PORT = config.PORT;
     app.listen(PORT, () => {

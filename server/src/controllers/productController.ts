@@ -4,7 +4,8 @@ import { Product } from '../models/Product';
 import { Category } from '../models/Category';
 import { KnowledgeDocument } from '../models/KnowledgeDocument';
 import { Review } from '../models/Review';
-import { KnowledgeBaseService, FALLBACK_STORE_PRODUCTS } from '../services/knowledgeBaseService';
+import { Inventory } from '../models/Inventory';
+import { KnowledgeBaseService } from '../services/knowledgeBaseService';
 
 // Public: Get all active products
 export const getProducts = async (req: Request, res: Response): Promise<void> => {
@@ -45,15 +46,12 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
     else if (sort === 'newest') query = query.sort({ createdAt: -1 });
     else query = query.sort({ isHero: -1, createdAt: -1 });
 
-    let products = await query.select('-costPrice').lean();
-    if (!products || products.length === 0) {
-      products = FALLBACK_STORE_PRODUCTS as any;
-    }
+    const products = await query.select('-costPrice').lean();
 
     res.json({ success: true, count: products.length, products });
   } catch (error: any) {
-    console.warn('⚠️ Product query fallback served:', error?.message);
-    res.json({ success: true, count: FALLBACK_STORE_PRODUCTS.length, products: FALLBACK_STORE_PRODUCTS });
+    console.error('⚠️ Error fetching products:', error?.message);
+    res.status(500).json({ success: false, message: error.message, products: [] });
   }
 };
 
@@ -72,14 +70,10 @@ export const getHeroProduct = async (req: Request, res: Response): Promise<void>
         .lean();
     }
 
-    if (!hero) {
-      hero = FALLBACK_STORE_PRODUCTS[0] as any;
-    }
-
-    res.json({ success: true, product: hero });
+    res.json({ success: true, product: hero || null });
   } catch (error: any) {
-    console.warn('⚠️ Hero product query fallback served:', error?.message);
-    res.json({ success: true, product: FALLBACK_STORE_PRODUCTS[0] });
+    console.error('⚠️ Hero product query error:', error?.message);
+    res.status(500).json({ success: false, message: error.message, product: null });
   }
 };
 
@@ -87,20 +81,19 @@ export const getHeroProduct = async (req: Request, res: Response): Promise<void>
 export const getProductBySlug = async (req: Request, res: Response): Promise<void> => {
   try {
     const { slug } = req.params;
-    let product = await Product.findOne({ slug: slug.toLowerCase(), isActive: true })
+    const product = await Product.findOne({ slug: slug.toLowerCase(), isActive: true })
       .populate('category', 'name slug')
       .select('-costPrice')
       .lean();
 
     if (!product) {
-      product = (FALLBACK_STORE_PRODUCTS.find((p: any) => p.slug === slug.toLowerCase()) || FALLBACK_STORE_PRODUCTS[0]) as any;
+      res.status(404).json({ success: false, message: 'Product not found' });
+      return;
     }
 
     res.json({ success: true, product });
   } catch (error: any) {
-    console.warn('⚠️ Product by slug query fallback served:', error?.message);
-    const fallback = FALLBACK_STORE_PRODUCTS.find((p: any) => p.slug === req.params.slug?.toLowerCase()) || FALLBACK_STORE_PRODUCTS[0];
-    res.json({ success: true, product: fallback });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -173,21 +166,75 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Admin: Delete / Archive product
+// Admin: Permanently delete or archive product
 export const deleteProduct = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const product = await Product.findByIdAndUpdate(id, { isActive: false }, { new: true });
+    const { soft } = req.query;
 
+    if (soft === 'true') {
+      const product = await Product.findByIdAndUpdate(id, { isActive: false }, { new: true });
+      if (!product) {
+        res.status(404).json({ success: false, message: 'Product not found' });
+        return;
+      }
+      await KnowledgeDocument.updateMany({ productRef: id }, { isActive: false });
+      res.json({ success: true, message: 'Product archived successfully' });
+      return;
+    }
+
+    // Default: Permanent deletion
+    const product = await Product.findByIdAndDelete(id);
     if (!product) {
       res.status(404).json({ success: false, message: 'Product not found' });
       return;
     }
 
-    // Deactivate knowledge document so AI Concierge does not recommend archived item
-    await KnowledgeDocument.updateMany({ productRef: id }, { isActive: false });
+    // Delete associated knowledge base entries, reviews, and inventory
+    await Promise.all([
+      KnowledgeDocument.deleteMany({ productRef: id }),
+      Review.deleteMany({ product: id }),
+      Inventory.deleteMany({ product: id }).catch(() => {}),
+    ]);
 
-    res.json({ success: true, message: 'Product archived successfully' });
+    res.json({ success: true, message: 'Product permanently deleted from catalog and store' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Purge initial demo/sample products in 1 click
+export const purgeDemoProducts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const demoSlugs = [
+      'orbitseal-magnetic-bag-resealer',
+      'spintidy-360-turntable-organizer',
+      'spacevault-vacuum-storage-cubes',
+      'magdock-floating-key-dock',
+      'cleanpress-kitchen-soap-dispenser',
+      'aeroglow-motion-sensor-light',
+      'autogrip-magsafe-car-mount',
+      'cablegrid-magnetic-cord-organizer',
+    ];
+
+    // Find all demo products
+    const demoProds = await Product.find({ slug: { $in: demoSlugs } });
+    const demoIds = demoProds.map((p) => p._id);
+
+    if (demoIds.length > 0) {
+      await Promise.all([
+        Product.deleteMany({ _id: { $in: demoIds } }),
+        KnowledgeDocument.deleteMany({ productRef: { $in: demoIds } }),
+        Review.deleteMany({ product: { $in: demoIds } }),
+        Inventory.deleteMany({ product: { $in: demoIds } }).catch(() => {}),
+      ]);
+    }
+
+    res.json({
+      success: true,
+      message: `Successfully purged ${demoIds.length} demo products. Your catalog is now clean for real products.`,
+      purgedCount: demoIds.length,
+    });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
   }

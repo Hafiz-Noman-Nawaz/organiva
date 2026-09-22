@@ -102,14 +102,14 @@ export default async function HomePage() {
 
       {/* 4. INTERACTIVE ROOM DECLUTTER QUIZ */}
       <div id="quiz-section">
-        <DeclutterQuiz />
+        <DeclutterQuiz products={products} />
       </div>
 
       {/* 5. INTERACTIVE BEFORE & AFTER COMPARISON */}
       <BeforeAfterSection />
 
       {/* 6. COORDINATED ROOM RESET BUNDLES */}
-      <BundleSection />
+      <BundleSection products={products} />
 
       {/* 7. VERIFIED REVIEWS */}
       <section className="py-20 bg-white border-y border-[#5B755D]/10">

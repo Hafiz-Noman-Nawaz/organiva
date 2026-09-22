@@ -1,97 +1,87 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ShoppingBag, Sparkles, Check, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useCart } from '@/lib/cartContext';
 
-export const BundleSection = () => {
+interface BundleSectionProps {
+  products?: any[];
+}
+
+export const BundleSection = ({ products = [] }: BundleSectionProps) => {
   const { addToCart, openCart } = useCart();
   const [addingBundle, setAddingBundle] = useState<string | null>(null);
 
-  const bundles = [
-    {
-      id: 'pantry-bundle',
-      name: 'The Ultimate Pantry Reset Bundle',
-      badge: 'Bestselling Room Set',
-      description: 'Hermetic bag resealing, 360° spice accessibility, and clean one-touch sink drainage in one complete set.',
-      regularPrice: 7450,
-      bundlePrice: 5650,
-      savings: 1800,
-      items: [
-        {
-          title: 'OrbitSeal 2-in-1 Magnetic Bag Sealer',
-          slug: 'orbitseal-magnetic-bag-resealer',
-          image: '/images/products/orbitseal-main.webp',
-          price: 2250,
-        },
-        {
-          title: 'SpinTidy 360° Rotating Turntable',
-          slug: 'spintidy-360-turntable-organizer',
-          image: '/images/products/spintidy-main.webp',
-          price: 2450,
-        },
-        {
-          title: 'CleanPress 2-in-1 Counter Soap Caddy',
-          slug: 'cleanpress-kitchen-soap-dispenser',
-          image: '/images/products/cleanpress-main.webp',
-          price: 1290,
-        },
-      ],
-    },
-    {
-      id: 'wardrobe-bundle',
-      name: 'Master Wardrobe Space-Saver Pack',
-      badge: 'Reclaims 80% Space',
-      description: 'High-density vacuum compression cubes to flatten bulky bedding, paired with motion-sensor closet lighting.',
-      regularPrice: 5450,
-      bundlePrice: 3990,
-      savings: 1460,
-      items: [
-        {
-          title: 'SpaceVault Vacuum Cubes (Set of 6)',
-          slug: 'spacevault-vacuum-storage-cubes',
-          image: '/images/products/spacevault-main.webp',
-          price: 2650,
-        },
-        {
-          title: 'AeroGlow Motion-Sensor Cabinet Light',
-          slug: 'aeroglow-motion-sensor-light',
-          image: '/images/products/aeroglow-main.webp',
-          price: 1750,
-        },
-      ],
-    },
-    {
-      id: 'desk-bundle',
-      name: 'Clean Desk & Commute Focus Pack',
-      badge: 'Zero Wire Clutter',
-      description: 'Keep your workspace cords magnetically anchored and your phone vibration-free with 15W wireless car charging.',
-      regularPrice: 5400,
-      bundlePrice: 3950,
-      savings: 1450,
-      items: [
-        {
-          title: 'CableGrid Magnetic Desktop Hub',
-          slug: 'cablegrid-magnetic-cord-organizer',
-          image: '/images/products/cablegrid-main.webp',
-          price: 1550,
-        },
-        {
-          title: 'AutoGrip 15W MagSafe Vent Mount',
-          slug: 'autogrip-magsafe-car-mount',
-          image: '/images/products/autogrip-main.webp',
-          price: 2850,
-        },
-      ],
-    },
-  ];
+  // Dynamically generate bundles from real active products
+  const bundles = useMemo(() => {
+    const active = products.filter((p) => p.isActive !== false);
+    if (active.length < 2) return [];
+
+    const generated: any[] = [];
+
+    // Bundle 1: Flagship Duo
+    const duoItems = active.slice(0, 2);
+    const duoRegular = duoItems.reduce((acc, p) => acc + (p.price || p.salePrice || 0), 0);
+    const duoSavings = Math.round(duoRegular * 0.18);
+    const duoPrice = duoRegular - duoSavings;
+
+    generated.push({
+      id: 'flagship-duo',
+      name: `${duoItems[0].title.replace('Organiva ', '')} + ${duoItems[1].title.replace('Organiva ', '')}`,
+      badge: 'Best Value Duo',
+      description: `Pair our bestselling ${duoItems[0].title} with the ${duoItems[1].title} for complete room decluttering and instant savings.`,
+      regularPrice: duoRegular,
+      bundlePrice: duoPrice,
+      savings: duoSavings,
+      items: duoItems.map((p) => ({
+        id: p._id,
+        title: p.title,
+        slug: p.slug,
+        image: p.images?.[0] || '/images/products/orbitseal-main.webp',
+        price: p.salePrice || p.price,
+      })),
+    });
+
+    // Bundle 2: Complete Trio (if at least 3 products exist)
+    if (active.length >= 3) {
+      const trioItems = active.slice(0, 3);
+      const trioRegular = trioItems.reduce((acc, p) => acc + (p.price || p.salePrice || 0), 0);
+      const trioSavings = Math.round(trioRegular * 0.22);
+      const trioPrice = trioRegular - trioSavings;
+
+      generated.push({
+        id: 'complete-trio',
+        name: 'The Ultimate Room Reset Trio',
+        badge: 'Top Seller • Save 22%',
+        description: 'A curated three-piece architectural organization system designed to completely streamline everyday household routines.',
+        regularPrice: trioRegular,
+        bundlePrice: trioPrice,
+        savings: trioSavings,
+        items: trioItems.map((p) => ({
+          id: p._id,
+          title: p.title,
+          slug: p.slug,
+          image: p.images?.[0] || '/images/products/spintidy-main.webp',
+          price: p.salePrice || p.price,
+        })),
+      });
+    }
+
+    return generated;
+  }, [products]);
+
+  if (bundles.length === 0) {
+    return null;
+  }
 
   const handleAddBundle = (bundle: typeof bundles[0]) => {
     setAddingBundle(bundle.id);
-    bundle.items.forEach((item) => {
+    bundle.items.forEach((item: any) => {
       addToCart(
         {
+          _id: item.id,
           title: item.title,
           slug: item.slug,
           price: item.price,
@@ -123,7 +113,7 @@ export const BundleSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className={`grid grid-cols-1 ${bundles.length > 1 ? 'lg:grid-cols-2' : 'max-w-xl mx-auto'} gap-6 sm:gap-8`}>
           {bundles.map((bundle) => {
             const isAdding = addingBundle === bundle.id;
 
@@ -138,11 +128,11 @@ export const BundleSection = () => {
                       {bundle.badge}
                     </span>
                     <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                      Save PKR {bundle.savings}
+                      Save PKR {bundle.savings.toLocaleString()}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-black text-[#171A18] tracking-tight leading-snug">
+                  <h3 className="text-lg sm:text-xl font-bold text-[#171A18] leading-tight">
                     {bundle.name}
                   </h3>
 
@@ -150,28 +140,34 @@ export const BundleSection = () => {
                     {bundle.description}
                   </p>
 
-                  {/* Included Items Thumbnail Preview */}
-                  <div className="my-6 space-y-2.5 pt-4 border-t border-[#5B755D]/10">
+                  {/* Included Items List */}
+                  <div className="mt-5 space-y-2.5 pt-4 border-t border-gray-100">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8681] block">
-                      Included in this Kit:
+                      Includes {bundle.items.length} Systems:
                     </span>
-                    {bundle.items.map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 text-xs">
-                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#FAF8F5] border border-[#5B755D]/10 shrink-0">
+                    {bundle.items.map((item: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-2 rounded-xl bg-[#FAF8F5] border border-gray-100"
+                      >
+                        <div className="w-9 h-9 rounded-lg overflow-hidden bg-white shrink-0 relative border border-gray-100">
                           <Image
                             src={item.image}
                             alt={item.title}
                             fill
-                            sizes="48px"
+                            sizes="36px"
                             className="object-cover"
                           />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="font-bold text-[#171A18] block truncate">
+                        <div className="min-w-0 flex-1">
+                          <Link
+                            href={`/products/${item.slug}`}
+                            className="text-xs font-bold text-[#171A18] hover:text-[#5B755D] truncate block transition-colors"
+                          >
                             {item.title}
-                          </span>
-                          <span className="text-[11px] text-[#5B755D] font-semibold">
-                            PKR {item.price}
+                          </Link>
+                          <span className="text-[10px] text-[#7F8681]">
+                            Individually: PKR {item.price.toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -179,29 +175,41 @@ export const BundleSection = () => {
                   </div>
                 </div>
 
-                {/* Bottom Pricing & Add Button */}
-                <div className="pt-4 border-t border-[#5B755D]/10 space-y-3">
-                  <div className="flex items-baseline justify-between">
+                {/* Pricing & CTA */}
+                <div className="mt-6 pt-5 border-t border-gray-100">
+                  <div className="flex items-baseline justify-between mb-3">
                     <div>
-                      <span className="text-2xl font-black text-[#171A18]">
-                        PKR {bundle.bundlePrice}
-                      </span>
-                      <span className="text-xs text-[#7F8681] line-through ml-2">
-                        PKR {bundle.regularPrice}
-                      </span>
+                      <span className="text-[10px] text-[#7F8681] block">Bundle Price (Free Delivery)</span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl sm:text-2xl font-black text-[#171A18]">
+                          PKR {bundle.bundlePrice.toLocaleString()}
+                        </span>
+                        <span className="text-xs text-gray-400 line-through">
+                          PKR {bundle.regularPrice.toLocaleString()}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-[10px] text-[#5B755D] font-bold bg-[#EBF1EB] px-2 py-0.5 rounded-full">
-                      Free Shipping
+                    <span className="text-[11px] font-bold text-[#5B755D]">
+                      In Stock • COD
                     </span>
                   </div>
 
                   <button
                     onClick={() => handleAddBundle(bundle)}
                     disabled={isAdding}
-                    className="w-full py-3.5 rounded-xl bg-[#5B755D] hover:bg-[#435845] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                    className="w-full py-3 rounded-xl bg-[#5B755D] hover:bg-[#435845] text-white text-xs font-bold transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
                   >
-                    <ShoppingBag size={15} />
-                    <span>{isAdding ? 'Adding Bundle...' : 'Add Complete Set to Cart'}</span>
+                    {isAdding ? (
+                      <>
+                        <Check size={16} />
+                        <span>Adding All Systems to Cart...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag size={15} />
+                        <span>Add Bundle to Cart (Save PKR {bundle.savings.toLocaleString()})</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

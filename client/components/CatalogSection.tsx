@@ -81,21 +81,8 @@ export const CatalogSection = ({ initialProducts, categories = [] }: CatalogSect
       return product.category.slug.toLowerCase();
     }
     if (typeof product.category === 'string') {
-      const lower = product.category.toLowerCase();
-      if (lower.includes('kitchen')) return 'kitchen';
-      if (lower.includes('closet')) return 'closet';
-      if (lower.includes('work') || lower.includes('desk')) return 'workspace';
-      if (lower.includes('living') || lower.includes('entry')) return 'living';
-      if (lower.includes('car')) return 'car';
-      return lower;
+      return product.category.toLowerCase();
     }
-    // Fallback based on title/slug heuristics
-    const slug = (product.slug || '').toLowerCase();
-    if (slug.includes('orbitseal') || slug.includes('spintidy') || slug.includes('cleanpress')) return 'kitchen';
-    if (slug.includes('spacevault') || slug.includes('aeroglow')) return 'closet';
-    if (slug.includes('cablegrid')) return 'workspace';
-    if (slug.includes('magdock')) return 'living';
-    if (slug.includes('autogrip')) return 'car';
     return '';
   };
 

@@ -69,64 +69,69 @@ export const HeroOrganiva = ({ categories = [], products = [], onSelectSpace }: 
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Helper to find representative product for a category
-  const findProductForCategory = (catSlug: string) => {
-    const s = catSlug.toLowerCase();
-    return products.find((p) => {
-      const pCatSlug = (p.category?.slug || (typeof p.category === 'string' ? p.category : '')).toLowerCase();
-      return pCatSlug === s || pCatSlug.includes(s) || (p.slug || '').toLowerCase().includes(s);
-    });
-  };
+  // Render interactive 3D folder papers using real products from DB
+  const folderPapers = React.useMemo(() => {
+    const activeProducts = [...products]
+      .filter((p) => p.isActive !== false)
+      .sort((a, b) => (b.isHero ? 1 : 0) - (a.isHero ? 1 : 0))
+      .slice(0, 3);
 
-  // Top 3 categories for the interactive folder
-  const topCategories = (activeCategories.length >= 3 ? activeCategories : defaultFallbackSpaces).slice(0, 3);
+    if (activeProducts.length > 0) {
+      return activeProducts.map((prod, idx) => {
+        const imageSrc = prod.images?.[0] || '/images/products/spintidy-main.webp';
+        const displayTitle = prod.title ? prod.title.replace('Organiva ', '') : `Product ${idx + 1}`;
+        const priceText = prod.salePrice || prod.price
+          ? `PKR ${(prod.salePrice || prod.price).toLocaleString()}`
+          : 'Explore System';
+        const catName = typeof prod.category === 'object' ? prod.category?.name : (prod.category || 'Curated');
 
-  const defaultPaperImages = [
-    '/images/products/spintidy-main.webp',
-    '/images/products/spacevault-main.webp',
-    '/images/products/magdock-main.webp',
-  ];
+        return (
+          <Link
+            key={prod._id || prod.slug || idx}
+            href={`/products/${prod.slug}`}
+            className="w-full h-full flex flex-col justify-between p-1.5 bg-[#FAF8F5] hover:bg-white border border-[#5B755D]/20 hover:border-[#5B755D]/50 rounded-[9px] relative overflow-hidden transition-all group/card cursor-pointer select-none"
+          >
+            <div className="relative w-full h-[54px] rounded-[6px] overflow-hidden bg-white shadow-2xs">
+              <Image
+                src={imageSrc}
+                alt={displayTitle}
+                fill
+                sizes="240px"
+                className="object-cover group-hover/card:scale-105 transition-transform duration-300"
+              />
+              <span className="absolute top-1 left-1 bg-black/75 text-[#8EB892] text-[4.5px] font-black uppercase px-1 py-0.5 rounded-full backdrop-blur-xs">
+                {catName}
+              </span>
+            </div>
+            <div className="pt-1 flex flex-col">
+              <span className="text-[5.5px] font-extrabold text-[#171A18] leading-tight line-clamp-1 group-hover/card:text-[#5B755D] transition-colors">
+                {displayTitle}
+              </span>
+              <div className="flex items-center justify-between mt-0.5">
+                <span className="text-[5px] font-bold text-[#5B755D]">{priceText}</span>
+                <span className="text-[4.5px] font-semibold text-[#7F8681] group-hover/card:text-[#171A18]">
+                  View System →
+                </span>
+              </div>
+            </div>
+          </Link>
+        );
+      });
+    }
 
-  const folderPapers = topCategories.map((cat, idx) => {
-    const matchedProd = findProductForCategory(cat.slug);
-    const imageSrc = cat.image || matchedProd?.images?.[0] || defaultPaperImages[idx % defaultPaperImages.length];
-    const displayTitle = matchedProd?.title ? matchedProd.title.replace('Organiva ', '') : cat.name;
-    const priceText = matchedProd?.salePrice || matchedProd?.price
-      ? `PKR ${(matchedProd.salePrice || matchedProd.price).toLocaleString()}`
-      : 'Explore Space';
-
-    return (
+    // Fallback if catalog is completely empty
+    return (activeCategories.length >= 3 ? activeCategories : defaultFallbackSpaces).slice(0, 3).map((cat, idx) => (
       <Link
         key={cat.slug || idx}
         href={`/shop?category=${cat.slug}`}
-        className="w-full h-full flex flex-col justify-between p-1.5 bg-[#FAF8F5] hover:bg-white border border-[#5B755D]/20 hover:border-[#5B755D]/50 rounded-[9px] relative overflow-hidden transition-all group/card cursor-pointer select-none"
+        className="w-full h-full flex flex-col justify-center items-center p-2 bg-[#FAF8F5] hover:bg-white border border-[#5B755D]/20 rounded-[9px] text-center group/card cursor-pointer select-none"
       >
-        <div className="relative w-full h-[54px] rounded-[6px] overflow-hidden bg-white shadow-2xs">
-          <Image
-            src={imageSrc}
-            alt={cat.name}
-            fill
-            sizes="240px"
-            className="object-cover group-hover/card:scale-105 transition-transform duration-300"
-          />
-          <span className="absolute top-1 left-1 bg-black/75 text-[#8EB892] text-[4.5px] font-black uppercase px-1 py-0.5 rounded-full backdrop-blur-xs">
-            {cat.name}
-          </span>
-        </div>
-        <div className="pt-1 flex flex-col">
-          <span className="text-[5.5px] font-extrabold text-[#171A18] leading-tight line-clamp-1 group-hover/card:text-[#5B755D] transition-colors">
-            {displayTitle}
-          </span>
-          <div className="flex items-center justify-between mt-0.5">
-            <span className="text-[5px] font-bold text-[#5B755D]">{priceText}</span>
-            <span className="text-[4.5px] font-semibold text-[#7F8681] group-hover/card:text-[#171A18]">
-              View Room →
-            </span>
-          </div>
-        </div>
+        <Sparkles size={14} className="text-[#5B755D] mb-1" />
+        <span className="text-[6.5px] font-black text-[#171A18] uppercase">{cat.name}</span>
+        <span className="text-[5px] text-[#7F8681] mt-0.5">Explore Category →</span>
       </Link>
-    );
-  });
+    ));
+  }, [products, activeCategories]);
 
   return (
     <section className="relative pt-8 pb-16 sm:pt-14 sm:pb-24 overflow-hidden border-b border-[#5B755D]/10 bg-[#FAF8F5]">
@@ -246,7 +251,7 @@ export const HeroOrganiva = ({ categories = [], products = [], onSelectSpace }: 
             {/* Bottom space quick tags (Dynamic from CMS categories) */}
             <div className="mt-8 flex items-center justify-center gap-2 relative z-10 flex-wrap">
               <span className="text-[11px] text-[#7F8681]">Featuring:</span>
-              {topCategories.map((c: any) => (
+              {displaySpaces.slice(0, 3).map((c: any) => (
                 <Link
                   key={c.slug}
                   href={`/shop?category=${c.slug}`}

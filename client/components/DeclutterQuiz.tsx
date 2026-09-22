@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import {
   Sparkles,
   ShoppingBag,
@@ -15,111 +16,112 @@ import {
 } from 'lucide-react';
 import { useCart } from '@/lib/cartContext';
 
-interface DeclutterOption {
-  id: string;
-  roomTitle: string;
-  problemText: string;
-  icon: any;
-  recommendationTitle: string;
-  recommendationText: string;
-  products: {
-    title: string;
-    slug: string;
-    image: string;
-    regularPrice: number;
-    salePrice: number;
-  }[];
+interface DeclutterQuizProps {
+  products?: any[];
 }
 
-export const DeclutterQuiz = () => {
+export const DeclutterQuiz = ({ products = [] }: DeclutterQuizProps) => {
   const { addToCart, openCart } = useCart();
   const [selectedId, setSelectedId] = useState('pantry');
   const [isAddingAll, setIsAddingAll] = useState(false);
 
-  const declutterOptions: DeclutterOption[] = [
-    {
-      id: 'pantry',
-      roomTitle: 'Kitchen & Pantry',
-      problemText: 'Stale chip bags, floppy plastic clips, and knocked-over spice jars in deep cabinets.',
-      icon: Utensils,
-      recommendationTitle: 'The 2-Piece Kitchen Pantry Reset',
-      recommendationText: 'Instant airtight heat seals for all groceries paired with a 360° rotating turntable so every spice jar is in arm’s reach.',
-      products: [
-        {
-          title: 'Organiva OrbitSeal 2-in-1 Bag Resealer',
-          slug: 'orbitseal-magnetic-bag-resealer',
-          image: '/images/products/orbitseal-main.webp',
-          regularPrice: 2850,
-          salePrice: 2250,
-        },
-        {
-          title: 'Organiva SpinTidy 360° Turntable',
-          slug: 'spintidy-360-turntable-organizer',
-          image: '/images/products/spintidy-main.webp',
-          regularPrice: 2950,
-          salePrice: 2450,
-        },
-      ],
-    },
-    {
-      id: 'wardrobe',
-      roomTitle: 'Closet & Wardrobe',
-      problemText: 'Overflowing winter duvets, blankets, and unlit dark closets with zero shelf space.',
-      icon: Shirt,
-      recommendationTitle: 'The Master Closet Declutter System',
-      recommendationText: 'Reclaim 80% shelf volume with airtight vacuum cubes and illuminate dark corners with wire-free motion lighting.',
-      products: [
-        {
-          title: 'Organiva SpaceVault Vacuum Cubes (6-Pack)',
-          slug: 'spacevault-vacuum-storage-cubes',
-          image: '/images/products/spacevault-main.webp',
-          regularPrice: 3250,
-          salePrice: 2650,
-        },
-        {
-          title: 'Organiva AeroGlow Sensor Light',
-          slug: 'aeroglow-motion-sensor-light',
-          image: '/images/products/aeroglow-main.webp',
-          regularPrice: 2200,
-          salePrice: 1750,
-        },
-      ],
-    },
-    {
-      id: 'workspace',
-      roomTitle: 'Desk & Cables',
-      problemText: 'Charging cords sliding off desk edges and tangled wire nests around power points.',
-      icon: Laptop,
-      recommendationTitle: 'The Clean Desk Focus System',
-      recommendationText: 'Weighted aluminum magnetic dock anchors your phone and laptop wires right at finger level with zero cable drops.',
-      products: [
-        {
-          title: 'Organiva CableGrid Magnetic Cord Hub',
-          slug: 'cablegrid-magnetic-cord-organizer',
-          image: '/images/products/cablegrid-main.webp',
-          regularPrice: 1950,
-          salePrice: 1550,
-        },
-      ],
-    },
-    {
-      id: 'entryway',
-      roomTitle: 'Living & Entryway',
-      problemText: 'Misplaced house and car keys, sunglasses, and mail scattered across tables.',
-      icon: Key,
-      recommendationTitle: 'The Calm Entryway Station',
-      recommendationText: 'Solid walnut and steel floating wall shelf with high-power hidden magnetic key suspension underneath.',
-      products: [
-        {
-          title: 'Organiva MagDock Floating Key & Mail Shelf',
-          slug: 'magdock-entryway-key-shelf',
-          image: '/images/products/magdock-main.webp',
-          regularPrice: 2450,
-          salePrice: 1850,
-        },
-      ],
-    },
-  ];
+  // Helper to match products for a given room space
+  const findRoomProducts = (roomKey: string) => {
+    return products.filter((p) => {
+      if (p.isActive === false) return false;
+      const catSlug = (typeof p.category === 'object' ? p.category?.slug : p.category || '').toLowerCase();
+      const catName = (typeof p.category === 'object' ? p.category?.name : '').toLowerCase();
+      const title = (p.title || '').toLowerCase();
+
+      if (roomKey === 'pantry') {
+        return catSlug.includes('kitchen') || catName.includes('kitchen') || title.includes('seal') || title.includes('turntable') || title.includes('soap');
+      }
+      if (roomKey === 'wardrobe') {
+        return catSlug.includes('closet') || catName.includes('closet') || title.includes('vacuum') || title.includes('cube') || title.includes('light');
+      }
+      if (roomKey === 'workspace') {
+        return catSlug.includes('workspace') || catSlug.includes('desk') || catName.includes('desk') || title.includes('cable') || title.includes('cord');
+      }
+      if (roomKey === 'entryway') {
+        return catSlug.includes('living') || catSlug.includes('car') || title.includes('dock') || title.includes('key') || title.includes('mount');
+      }
+      return false;
+    });
+  };
+
+  const declutterOptions = useMemo(() => {
+    const pantryProds = findRoomProducts('pantry').slice(0, 2);
+    const wardrobeProds = findRoomProducts('wardrobe').slice(0, 2);
+    const workspaceProds = findRoomProducts('workspace').slice(0, 2);
+    const entrywayProds = findRoomProducts('entryway').slice(0, 2);
+
+    return [
+      {
+        id: 'pantry',
+        roomTitle: 'Kitchen & Pantry',
+        problemText: 'Stale food bags, floppy clips, and knocked-over spice jars in deep cabinets.',
+        icon: Utensils,
+        recommendationTitle: 'Kitchen & Pantry Systems',
+        recommendationText: 'Airtight bag preservation and 360° rotating access bring effortless order to food preparation.',
+        products: pantryProds.map((p) => ({
+          id: p._id,
+          title: p.title,
+          slug: p.slug,
+          image: p.images?.[0] || '/images/products/orbitseal-main.webp',
+          regularPrice: p.price,
+          salePrice: p.salePrice || p.price,
+        })),
+      },
+      {
+        id: 'wardrobe',
+        roomTitle: 'Closet & Wardrobe',
+        problemText: 'Overflowing winter duvets, blankets, and unlit dark closets with zero shelf space.',
+        icon: Shirt,
+        recommendationTitle: 'Closet & Wardrobe Systems',
+        recommendationText: 'Reclaim up to 80% volume with compression storage and illuminate dark spaces without wiring.',
+        products: wardrobeProds.map((p) => ({
+          id: p._id,
+          title: p.title,
+          slug: p.slug,
+          image: p.images?.[0] || '/images/products/spacevault-main.webp',
+          regularPrice: p.price,
+          salePrice: p.salePrice || p.price,
+        })),
+      },
+      {
+        id: 'workspace',
+        roomTitle: 'Desk & Cables',
+        problemText: 'Charging cords sliding off desk edges and tangled wire nests around power points.',
+        icon: Laptop,
+        recommendationTitle: 'Clean Desk & Workspace Gear',
+        recommendationText: 'Magnetic cable anchors and clean charging setups keep cords accessible at fingertip level.',
+        products: workspaceProds.map((p) => ({
+          id: p._id,
+          title: p.title,
+          slug: p.slug,
+          image: p.images?.[0] || '/images/products/cablegrid-main.webp',
+          regularPrice: p.price,
+          salePrice: p.salePrice || p.price,
+        })),
+      },
+      {
+        id: 'entryway',
+        roomTitle: 'Living & Entryway',
+        problemText: 'Misplaced house and car keys, sunglasses, and mail scattered across tables.',
+        icon: Key,
+        recommendationTitle: 'Calm Entryway Solutions',
+        recommendationText: 'Minimalist wall stations with concealed magnetic key docks give your everyday essentials a permanent home.',
+        products: entrywayProds.map((p) => ({
+          id: p._id,
+          title: p.title,
+          slug: p.slug,
+          image: p.images?.[0] || '/images/products/magdock-main.webp',
+          regularPrice: p.price,
+          salePrice: p.salePrice || p.price,
+        })),
+      },
+    ];
+  }, [products]);
 
   const activeOption = declutterOptions.find((o) => o.id === selectedId) || declutterOptions[0];
 
@@ -129,9 +131,10 @@ export const DeclutterQuiz = () => {
 
   const handleAddAllToCart = () => {
     setIsAddingAll(true);
-    activeOption.products.forEach((p) => {
+    activeOption.products.forEach((p: any) => {
       addToCart(
         {
+          _id: p.id,
           title: p.title,
           slug: p.slug,
           price: p.regularPrice,
@@ -201,83 +204,131 @@ export const DeclutterQuiz = () => {
           })}
         </div>
 
-        {/* Solution Showcase Card */}
-        <div className="max-w-4xl mx-auto bg-white rounded-3xl border border-[#5B755D]/20 shadow-md p-6 sm:p-10 animate-fade-in">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-            {/* Left Explanation */}
-            <div className="lg:max-w-md space-y-4 text-left">
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#5B755D] bg-[#EBF1EB] px-3 py-1 rounded-full border border-[#5B755D]/20">
-                Recommended Solution System
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-[#171A18] tracking-tight">
+        {/* Recommendation Panel */}
+        <div className="bg-white rounded-3xl border border-[#5B755D]/15 shadow-xs max-w-4xl mx-auto p-6 sm:p-10 transition-all duration-300">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-gray-100">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#5B755D] bg-[#EBF1EB] px-2.5 py-0.5 rounded-full border border-[#5B755D]/20">
+                  Tailored Prescription
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-[#171A18] mt-1">
                 {activeOption.recommendationTitle}
               </h3>
-              <p className="text-xs sm:text-sm text-[#525B54] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#525B54] mt-1 max-w-xl">
                 {activeOption.recommendationText}
               </p>
-
-              {/* Price & Savings Pill */}
-              <div className="p-4 rounded-2xl bg-[#FAF8F5] border border-[#5B755D]/15 space-y-1">
-                <div className="flex items-baseline gap-2.5">
-                  <span className="text-2xl font-black text-[#171A18]">PKR {bundleTotalSale}</span>
-                  {totalSavings > 0 && (
-                    <span className="text-xs text-[#7F8681] line-through font-semibold">
-                      PKR {bundleTotalRegular}
-                    </span>
-                  )}
-                  {totalSavings > 0 && (
-                    <span className="text-[10px] font-bold bg-[#EBF1EB] text-[#435845] px-2 py-0.5 rounded-full">
-                      Save PKR {totalSavings}
-                    </span>
-                  )}
-                </div>
-                <p className="text-[11px] text-[#5B755D] font-medium flex items-center gap-1">
-                  <CheckCircle2 size={13} />
-                  <span>Free Express Nationwide Delivery & Cash on Delivery</span>
-                </p>
-              </div>
-
-              <button
-                onClick={handleAddAllToCart}
-                disabled={isAddingAll}
-                className="w-full py-4 rounded-xl bg-[#5B755D] hover:bg-[#435845] text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all cursor-pointer"
-              >
-                <ShoppingBag size={16} />
-                <span>{isAddingAll ? 'Adding System...' : 'Get This Complete Room System'}</span>
-              </button>
             </div>
 
-            {/* Right: Products Visual Lineup */}
-            <div className="flex items-center gap-3 overflow-x-auto pb-2 justify-center">
-              {activeOption.products.map((prod, idx) => (
-                <div
-                  key={prod.slug}
-                  className="w-44 bg-[#FAF8F5] rounded-2xl p-3 border border-[#5B755D]/15 shrink-0 flex flex-col justify-between text-left"
-                >
-                  <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-white mb-2.5 border border-[#5B755D]/10">
-                    <Image
-                      src={prod.image}
-                      alt={prod.title}
-                      fill
-                      sizes="176px"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <h5 className="font-bold text-xs text-[#171A18] line-clamp-2 leading-tight">
-                      {prod.title}
-                    </h5>
-                    <div className="mt-1.5 flex items-baseline gap-1.5">
-                      <span className="font-black text-xs text-[#5B755D]">PKR {prod.salePrice}</span>
-                      <span className="text-[10px] text-[#7F8681] line-through">
-                        PKR {prod.regularPrice}
+            {activeOption.products.length > 0 && (
+              <div className="shrink-0 flex items-baseline gap-2 bg-[#FAF8F5] px-4 py-2.5 rounded-2xl border border-[#5B755D]/15">
+                <div>
+                  <span className="text-[10px] text-[#7F8681] block">Curated Set:</span>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-black text-[#171A18]">
+                      PKR {bundleTotalSale.toLocaleString()}
+                    </span>
+                    {totalSavings > 0 && (
+                      <span className="text-xs text-gray-400 line-through">
+                        PKR {bundleTotalRegular.toLocaleString()}
                       </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Recommended Product Items */}
+          {activeOption.products.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+                {activeOption.products.map((p, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-4 p-3.5 rounded-2xl bg-[#FAF8F5] border border-gray-100 hover:border-[#5B755D]/30 transition-colors"
+                  >
+                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-white shrink-0 relative border border-gray-200">
+                      <Image
+                        src={p.image}
+                        alt={p.title}
+                        fill
+                        sizes="64px"
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <Link
+                        href={`/products/${p.slug}`}
+                        className="text-xs font-bold text-[#171A18] hover:text-[#5B755D] truncate block transition-colors"
+                      >
+                        {p.title}
+                      </Link>
+                      <div className="flex items-baseline gap-2 mt-1">
+                        <span className="text-xs font-black text-[#5B755D]">
+                          PKR {p.salePrice.toLocaleString()}
+                        </span>
+                        {p.salePrice < p.regularPrice && (
+                          <span className="text-[10px] text-gray-400 line-through">
+                            PKR {p.regularPrice.toLocaleString()}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Bottom CTA Actions */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-xs text-[#525B54]">
+                  <CheckCircle2 size={15} className="text-[#5B755D]" />
+                  <span>Includes Cash on Delivery + 7-Day Replacement Guarantee</span>
                 </div>
-              ))}
+
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <Link
+                    href={`/shop?category=${activeOption.id}`}
+                    className="w-full sm:w-auto text-center px-4 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    View All in Space
+                  </Link>
+
+                  <button
+                    onClick={handleAddAllToCart}
+                    disabled={isAddingAll}
+                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#5B755D] hover:bg-[#435845] text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+                  >
+                    {isAddingAll ? (
+                      <>
+                        <CheckCircle2 size={15} />
+                        <span>Adding to Cart...</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingBag size={15} />
+                        <span>Add Solution Set to Cart</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="py-8 text-center space-y-3">
+              <Sparkles size={28} className="mx-auto text-[#5B755D]" />
+              <p className="text-xs text-[#525B54] max-w-sm mx-auto">
+                We are actively uploading curated organizers for this space. Explore all available items in the shop.
+              </p>
+              <Link
+                href="/shop"
+                className="inline-block px-5 py-2.5 rounded-xl bg-[#5B755D] text-white text-xs font-bold hover:bg-[#435845] transition-colors"
+              >
+                Browse All Products
+              </Link>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>

@@ -7,6 +7,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  purgeDemoProducts,
   getProductReviews,
   submitProductReview,
 } from '../controllers/productController';
@@ -26,5 +27,6 @@ router.get('/admin/all', authenticate, requireAdmin, getAdminProducts);
 router.post('/admin', authenticate, requireAdmin, createProduct);
 router.put('/admin/:id', authenticate, requireAdmin, updateProduct);
 router.delete('/admin/:id', authenticate, requireAdmin, deleteProduct);
+router.post('/admin/purge-samples', authenticate, requireAdmin, purgeDemoProducts);
 
 export default router;
