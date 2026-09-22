@@ -447,6 +447,53 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
   }
 };
 
+// Admin: Delete a single order
+export const deleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const order = await Order.findById(id);
+    if (!order) {
+      res.status(404).json({ success: false, message: 'Order not found' });
+      return;
+    }
+
+    // Restore stock for orders that were not already cancelled/returned
+    const wasActive = !['CANCELLED', 'RETURNED'].includes(order.orderStatus);
+    if (wasActive) {
+      for (const item of order.items) {
+        if (item.product) {
+          const prod = await Product.findById(item.product);
+          if (prod) {
+            prod.stock += item.quantity;
+            if (prod.stock > 5) prod.stockStatus = 'IN_STOCK';
+            else if (prod.stock > 0) prod.stockStatus = 'LOW_STOCK';
+            await prod.save();
+          }
+        }
+      }
+    }
+
+    await Order.findByIdAndDelete(id);
+    res.json({ success: true, message: `Order ${order.orderId} deleted permanently.` });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Admin: Purge all orders (nuclear reset)
+export const purgeAllOrders = async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const result = await Order.deleteMany({});
+    res.json({
+      success: true,
+      message: `Purged ${result.deletedCount} order(s) from the database.`,
+      deletedCount: result.deletedCount,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Public: Validate and apply promotional coupon
 export const applyCoupon = async (req: Request, res: Response): Promise<void> => {
   try {

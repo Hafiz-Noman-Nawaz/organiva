@@ -5,6 +5,8 @@ import {
   getOrderById,
   getAdminOrders,
   updateOrderStatus,
+  deleteOrder,
+  purgeAllOrders,
   getPublicShippingRule,
   applyCoupon,
 } from '../controllers/orderController';
@@ -21,6 +23,8 @@ router.get('/:orderId', getOrderById);
 
 // Admin routes
 router.get('/admin/all', authenticate, requireAdmin, getAdminOrders);
+router.delete('/admin/purge-all', authenticate, requireAdmin, purgeAllOrders);
 router.put('/admin/:id/status', authenticate, requireAdmin, updateOrderStatus);
+router.delete('/admin/:id', authenticate, requireAdmin, deleteOrder);
 
 export default router;

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ShoppingBag, Search, Eye, CheckCircle2, Truck, XCircle, AlertCircle, Phone, MapPin, Printer } from 'lucide-react';
+import { ShoppingBag, Search, Eye, CheckCircle2, Truck, XCircle, AlertCircle, Phone, MapPin, Printer, Trash2, AlertTriangle } from 'lucide-react';
 import { api } from '@/lib/api';
 
 export default function AdminOrdersPage() {
@@ -11,6 +11,15 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Purge state
+  const [showPurgeConfirm, setShowPurgeConfirm] = useState(false);
+  const [purgeLoading, setPurgeLoading] = useState(false);
+  const [purgeResult, setPurgeResult] = useState('');
 
   // Courier & Tracking State
   const [courierName, setCourierName] = useState('Trax Logistics');
@@ -302,6 +311,45 @@ export default function AdminOrdersPage() {
     }
   };
 
+  // Delete single order
+  const handleDeleteOrder = async () => {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    const token = localStorage.getItem('organiva_admin_token');
+    try {
+      const res = await api.delete(`/orders/admin/${deleteTarget._id}`, token || undefined);
+      if (res.success) {
+        setDeleteTarget(null);
+        if (selectedOrder?._id === deleteTarget._id) setSelectedOrder(null);
+        fetchOrders();
+      }
+    } catch (e) {
+      console.error('Failed to delete order', e);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  // Purge all orders
+  const handlePurgeAll = async () => {
+    setPurgeLoading(true);
+    const token = localStorage.getItem('organiva_admin_token');
+    try {
+      const res = await api.delete('/orders/admin/purge-all', token || undefined);
+      if (res.success) {
+        setPurgeResult(res.message);
+        setShowPurgeConfirm(false);
+        setSelectedOrder(null);
+        fetchOrders();
+        setTimeout(() => setPurgeResult(''), 5000);
+      }
+    } catch (e) {
+      console.error('Failed to purge orders', e);
+    } finally {
+      setPurgeLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -314,8 +362,13 @@ export default function AdminOrdersPage() {
           </h1>
         </div>
 
-        {/* Filters */}
+        {/* Filters + Actions */}
         <div className="flex items-center gap-3">
+          {purgeResult && (
+            <span className="text-[11px] font-bold text-green-700 bg-green-50 px-3 py-1.5 rounded-full animate-pulse">
+              ✓ {purgeResult}
+            </span>
+          )}
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -330,6 +383,15 @@ export default function AdminOrdersPage() {
             <option value="DELIVERED">Delivered</option>
             <option value="CANCELLED">Cancelled</option>
           </select>
+          {orders.length > 0 && (
+            <button
+              onClick={() => setShowPurgeConfirm(true)}
+              className="px-3 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs transition-colors border border-red-200 cursor-pointer inline-flex items-center gap-1.5"
+            >
+              <Trash2 size={13} />
+              Purge All
+            </button>
+          )}
         </div>
       </div>
 
@@ -411,6 +473,13 @@ export default function AdminOrdersPage() {
                           <Eye size={13} />
                           <span>Manage</span>
                         </button>
+                        <button
+                          onClick={() => setDeleteTarget(o)}
+                          title="Delete this order permanently"
+                          className="px-2 py-1.5 rounded-lg bg-white hover:bg-red-50 text-red-500 hover:text-red-700 font-bold text-xs transition-colors border border-red-200/50 hover:border-red-300 cursor-pointer inline-flex items-center gap-1"
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -440,6 +509,13 @@ export default function AdminOrdersPage() {
                 >
                   <Printer size={14} className="text-[#5B755D]" />
                   <span>Print 4x6 AWB</span>
+                </button>
+                <button
+                  onClick={() => setDeleteTarget(selectedOrder)}
+                  className="px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs border border-red-200 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 size={14} />
+                  <span>Delete</span>
                 </button>
                 <button
                   onClick={() => setSelectedOrder(null)}
@@ -598,6 +674,102 @@ export default function AdminOrdersPage() {
             <div className="pt-2 border-t border-gray-100 flex items-center justify-between text-xs sm:text-sm font-bold">
               <span>Total Bill ({selectedOrder.paymentMethod}):</span>
               <span className="text-base text-[#5B755D]">PKR {selectedOrder.total}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-red-200 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center">
+                <AlertTriangle size={24} className="text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold text-[#171A18]">Delete Order</h3>
+                <p className="text-xs text-[#7F8681]">This action is permanent and cannot be undone.</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-red-50/50 rounded-2xl border border-red-100 text-xs space-y-1.5">
+              <p className="font-bold text-[#171A18]">
+                Order: <span className="font-mono">{deleteTarget.orderId}</span>
+              </p>
+              <p className="text-[#525B54]">
+                Customer: {deleteTarget.customer?.fullName} • {deleteTarget.customer?.city}
+              </p>
+              <p className="text-[#525B54]">
+                Total: PKR {deleteTarget.total} • Status: {deleteTarget.orderStatus}
+              </p>
+              {!['CANCELLED', 'RETURNED'].includes(deleteTarget.orderStatus) && (
+                <p className="text-amber-700 font-semibold mt-1">
+                  ⚠ Stock will be restored for {deleteTarget.items?.length || 0} item(s).
+                </p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#171A18] font-bold text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteOrder}
+                disabled={deleteLoading}
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-bold text-xs transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <Trash2 size={13} />
+                {deleteLoading ? 'Deleting...' : 'Delete Permanently'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Purge All Confirmation Modal */}
+      {showPurgeConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-red-200 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-red-100 flex items-center justify-center">
+                <AlertTriangle size={24} className="text-red-700" />
+              </div>
+              <div>
+                <h3 className="text-lg font-extrabold text-red-700">Purge All Orders</h3>
+                <p className="text-xs text-[#7F8681]">Nuclear reset — removes every order from the database.</p>
+              </div>
+            </div>
+
+            <div className="p-4 bg-red-50 rounded-2xl border border-red-200 text-xs space-y-1.5">
+              <p className="font-bold text-red-800">
+                This will permanently delete all {orders.length} order(s) in the pipeline.
+              </p>
+              <p className="text-red-700">
+                • All customer order history will be lost<br />
+                • Order tracking links will stop working<br />
+                • Stock will NOT be restored (use Cancel status first if needed)
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowPurgeConfirm(false)}
+                className="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-[#171A18] font-bold text-xs transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePurgeAll}
+                disabled={purgeLoading}
+                className="px-5 py-2 rounded-xl bg-red-700 hover:bg-red-800 disabled:opacity-50 text-white font-bold text-xs transition-all shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <Trash2 size={13} />
+                {purgeLoading ? 'Purging...' : `Purge All ${orders.length} Orders`}
+              </button>
             </div>
           </div>
         </div>
