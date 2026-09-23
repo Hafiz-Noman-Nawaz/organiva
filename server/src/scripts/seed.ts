@@ -1,7 +1,25 @@
 import { Category } from '../models/Category';
 import { ShippingRule } from '../models/ShippingRule';
 import { Coupon } from '../models/Coupon';
+import { Supplier } from '../models/Inventory';
 import { KnowledgeBaseService } from '../services/knowledgeBaseService';
+
+export const purgeMockSuppliersIfAny = async (): Promise<void> => {
+  try {
+    const res = await Supplier.deleteMany({
+      $or: [
+        { email: { $in: ['orders@apexmod.cn', 'export@precisionliving.com'] } },
+        { name: { $in: ['Apex Modern Tech Hub', 'Precision Living Co. Ltd'] } },
+        { notes: { $regex: /OrbitSeal|AeroGlow|MagSafe/i } },
+      ],
+    });
+    if (res.deletedCount && res.deletedCount > 0) {
+      console.log(`🧹 Purged ${res.deletedCount} legacy mock supply partners.`);
+    }
+  } catch (err) {
+    console.warn('Purge mock suppliers error:', err);
+  }
+};
 
 export const autoSeedCouponsIfEmpty = async (): Promise<void> => {
   const count = await Coupon.countDocuments();
@@ -29,6 +47,7 @@ export const autoSeedCouponsIfEmpty = async (): Promise<void> => {
 
 export const autoSeedIfEmpty = async (): Promise<void> => {
   try {
+    await purgeMockSuppliersIfAny();
     await autoSeedCouponsIfEmpty();
 
     const catCount = await Category.countDocuments();

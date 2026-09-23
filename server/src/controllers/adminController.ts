@@ -82,6 +82,34 @@ export const createSupplier = async (req: Request, res: Response): Promise<void>
   }
 };
 
+export const updateSupplier = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const supplier = await Supplier.findByIdAndUpdate(id, req.body, { new: true });
+    if (!supplier) {
+      res.status(404).json({ success: false, message: 'Supplier not found' });
+      return;
+    }
+    res.json({ success: true, supplier });
+  } catch (error: any) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+export const deleteSupplier = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const supplier = await Supplier.findByIdAndDelete(id);
+    if (!supplier) {
+      res.status(404).json({ success: false, message: 'Supplier not found' });
+      return;
+    }
+    res.json({ success: true, message: 'Supplier deleted successfully' });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // --- SHIPPING RULES (ADMIN) ---
 export const getShippingRules = async (req: Request, res: Response): Promise<void> => {
   try {
