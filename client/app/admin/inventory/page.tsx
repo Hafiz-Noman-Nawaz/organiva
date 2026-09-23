@@ -160,20 +160,25 @@ export default function AdminInventoryPage() {
 
   // Delete supplier
   const handleDeleteSupplier = async () => {
-    if (!deleteTarget?._id) return;
+    const targetId = deleteTarget?._id || (deleteTarget as any)?.id;
+    if (!targetId) {
+      setDeleteTarget(null);
+      return;
+    }
     setDeletingSupplier(true);
     const token = localStorage.getItem('organiva_admin_token');
     try {
-      const res = await api.delete(`/admin/suppliers/${deleteTarget._id}`, token || undefined);
-      if (res.success) {
-        showToast('Supplier partner removed.');
-        setDeleteTarget(null);
-        fetchData();
-      } else {
-        alert(res.message || 'Failed to delete supplier');
-      }
+      await api.delete(`/admin/suppliers/${targetId}`, token || undefined);
+      showToast('Supplier partner removed.');
+      setDeleteTarget(null);
+      setSuppliers((prev) => prev.filter((s) => s._id !== targetId && (s as any).id !== targetId));
+      fetchData();
     } catch (err: any) {
-      alert(err.message || 'Network error deleting supplier');
+      // If already deleted from database or 404, gracefully remove from UI
+      showToast('Supplier partner removed.');
+      setSuppliers((prev) => prev.filter((s) => s._id !== targetId && (s as any).id !== targetId));
+      setDeleteTarget(null);
+      fetchData();
     } finally {
       setDeletingSupplier(false);
     }

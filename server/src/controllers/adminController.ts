@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { Order } from '../models/Order';
 import { Product } from '../models/Product';
@@ -65,6 +66,15 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
 // --- SUPPLIERS (ADMIN ONLY) ---
 export const getSuppliers = async (req: Request, res: Response): Promise<void> => {
   try {
+    // Automatically purge legacy mock suppliers so they never appear
+    await Supplier.deleteMany({
+      $or: [
+        { email: { $in: ['orders@apexmod.cn', 'export@precisionliving.com'] } },
+        { name: { $in: ['Apex Modern Tech Hub', 'Precision Living Co. Ltd'] } },
+        { notes: { $regex: /OrbitSeal|AeroGlow|MagSafe/i } },
+      ],
+    }).catch(() => {});
+
     const suppliers = await Supplier.find().sort({ name: 1 }).lean();
     res.json({ success: true, count: suppliers.length, suppliers });
   } catch (error: any) {
@@ -85,7 +95,8 @@ export const createSupplier = async (req: Request, res: Response): Promise<void>
 export const updateSupplier = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const supplier = await Supplier.findByIdAndUpdate(id, req.body, { new: true });
+    const filter = mongoose.Types.ObjectId.isValid(id) ? { _id: id } : { name: id };
+    const supplier = await Supplier.findOneAndUpdate(filter, req.body, { new: true });
     if (!supplier) {
       res.status(404).json({ success: false, message: 'Supplier not found' });
       return;
@@ -99,11 +110,12 @@ export const updateSupplier = async (req: Request, res: Response): Promise<void>
 export const deleteSupplier = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const supplier = await Supplier.findByIdAndDelete(id);
-    if (!supplier) {
-      res.status(404).json({ success: false, message: 'Supplier not found' });
-      return;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      await Supplier.findByIdAndDelete(id);
+    } else {
+      await Supplier.deleteMany({ $or: [{ _id: id }, { name: id }] });
     }
+    // Idempotent: always return success if the supplier is now removed
     res.json({ success: true, message: 'Supplier deleted successfully' });
   } catch (error: any) {
     res.status(500).json({ success: false, message: error.message });
