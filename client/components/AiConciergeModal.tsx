@@ -212,7 +212,7 @@ export const AiConciergeModal = ({
                         <div className="flex items-center gap-2.5">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-white shrink-0 border border-[#5B755D]/10 relative">
                             <Image
-                              src={p.images?.[0] || '/images/products/orbitseal-main.webp'}
+                              src={p.images?.[0] || '/images/placeholder-product.svg'}
                               alt={p.title}
                               fill
                               sizes="40px"

@@ -39,7 +39,7 @@ export const BundleSection = ({ products = [] }: BundleSectionProps) => {
         id: p._id,
         title: p.title,
         slug: p.slug,
-        image: p.images?.[0] || '/images/products/orbitseal-main.webp',
+        image: p.images?.[0] || '/images/placeholder-product.svg',
         price: p.salePrice || p.price,
       })),
     });

@@ -93,7 +93,7 @@ const ProductSchema = new Schema<IProduct>(
     videoUrl: { type: String },
     threeDModel: {
       enabled: { type: Boolean, default: false },
-      modelType: { type: String, default: 'orbitseal' },
+      modelType: { type: String, default: 'standard' },
       modelUrl: { type: String },
       accentColor: { type: String, default: '#5B755D' },
     },

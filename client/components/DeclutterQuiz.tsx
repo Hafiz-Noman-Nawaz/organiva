@@ -67,7 +67,7 @@ export const DeclutterQuiz = ({ products = [] }: DeclutterQuizProps) => {
           id: p._id,
           title: p.title,
           slug: p.slug,
-          image: p.images?.[0] || '/images/products/orbitseal-main.webp',
+          image: p.images?.[0] || '/images/placeholder-product.svg',
           regularPrice: p.price,
           salePrice: p.salePrice || p.price,
         })),

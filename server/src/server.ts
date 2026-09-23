@@ -15,7 +15,6 @@ import aiRoutes from './routes/aiRoutes';
 import adminRoutes from './routes/adminRoutes';
 import uploadRoutes from './routes/uploadRoutes';
 import { autoSeedIfEmpty } from './scripts/seed';
-import { updateHomeOrganizationCatalog } from './scripts/updateCatalog';
 
 // Prevent any external third-party SDK or stream error from crashing the server
 process.on('unhandledRejection', (reason: any) => {

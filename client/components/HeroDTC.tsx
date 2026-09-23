@@ -8,7 +8,6 @@ import {
   Sparkles,
   ShieldCheck,
   Truck,
-  Star,
   Zap,
   ShoppingBag,
   ArrowRight,
@@ -26,14 +25,10 @@ export const HeroDTC = ({ heroProduct }: { heroProduct: any }) => {
 
   const images = heroProduct?.images && heroProduct.images.length > 0
     ? heroProduct.images
-    : [
-        '/images/products/orbitseal-main.webp',
-        '/images/products/orbitseal-fridge.webp',
-        '/images/products/orbitseal-pack.webp',
-      ];
+    : ['/images/placeholder-product.svg'];
 
-  const displayPrice = heroProduct?.salePrice || 2250;
-  const regularPrice = heroProduct?.price || 2850;
+  const displayPrice = heroProduct?.salePrice || heroProduct?.price || 0;
+  const regularPrice = heroProduct?.price || 0;
 
   const handleBuyNow = () => {
     addToCart(heroProduct, 1);
@@ -64,35 +59,25 @@ export const HeroDTC = ({ heroProduct }: { heroProduct: any }) => {
 
             {/* Impact Headline */}
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#171A18] tracking-tight leading-[1.08]">
-              The 2-second seal that saves your groceries.
+              {heroProduct?.title || 'Smart Products for Simpler Living.'}
             </h1>
 
             {/* Sub-headline */}
             <p className="text-base sm:text-lg text-[#525B54] leading-relaxed max-w-xl">
-              Tired of stale chips, broken plastic clips, and messy pantry bags? The{' '}
-              <strong className="text-[#171A18]">Organiva OrbitSeal</strong> delivers instant,
-              airtight heat welds and hides a precision safety cutter. Docks right onto your fridge door.
+              {heroProduct?.description || heroProduct?.shortBenefit || 'Organiva designs thoughtful everyday upgrades that solve small, annoying household problems permanently. Delivered nationwide with Cash on Delivery.'}
             </p>
 
             {/* Value Bullets */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs text-[#2E332F] font-semibold">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#5B755D] shrink-0" />
-                <span>Airtight seal in under 2s</span>
+            {heroProduct?.benefits && heroProduct.benefits.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs text-[#2E332F] font-semibold">
+                {heroProduct.benefits.slice(0, 4).map((b: any, i: number) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <CheckCircle2 size={16} className="text-[#5B755D] shrink-0" />
+                    <span>{typeof b === 'string' ? b : b.title || b.text}</span>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#5B755D] shrink-0" />
-                <span>Integrated clean safety blade</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#5B755D] shrink-0" />
-                <span>Neodymium magnetic fridge dock</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 size={16} className="text-[#5B755D] shrink-0" />
-                <span>Type-C USB rechargeable</span>
-              </div>
-            </div>
+            )}
 
             {/* Pricing & Stock Ticker */}
             <div className="p-4 rounded-2xl bg-white border border-[#5B755D]/15 shadow-xs flex items-center justify-between">
@@ -147,13 +132,8 @@ export const HeroDTC = ({ heroProduct }: { heroProduct: any }) => {
             {/* Social Proof & Trust Strip */}
             <div className="flex flex-wrap items-center gap-6 pt-3 text-xs text-[#6B726C] border-t border-[#5B755D]/10">
               <div className="flex items-center gap-1.5">
-                <div className="flex text-[#D97706]">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" />
-                  ))}
-                </div>
-                <span className="font-bold text-[#171A18]">4.9/5</span>
-                <span>(1,200+ Pakistani homes)</span>
+                <ShieldCheck size={15} className="text-[#5B755D]" />
+                <span>7-Day Replacement Guarantee</span>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -168,7 +148,7 @@ export const HeroDTC = ({ heroProduct }: { heroProduct: any }) => {
             <div className="relative w-full aspect-square sm:aspect-4/3 rounded-3xl overflow-hidden bg-white border border-[#5B755D]/20 shadow-xl group">
               <Image
                 src={images[selectedImage]}
-                alt={heroProduct?.title || 'Organiva OrbitSeal'}
+                alt={heroProduct?.title || 'Organiva Product'}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -176,21 +156,16 @@ export const HeroDTC = ({ heroProduct }: { heroProduct: any }) => {
               />
 
               {/* Floating Highlight Badges */}
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#5B755D]/20 shadow-sm text-xs font-bold text-[#171A18] flex items-center gap-1.5">
-                <Sparkles size={14} className="text-[#5B755D]" />
-                <span>Airtight in 2s</span>
-              </div>
+              {heroProduct?.shortBenefit && (
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#5B755D]/20 shadow-sm text-xs font-bold text-[#171A18] flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-[#5B755D]" />
+                  <span className="line-clamp-1 max-w-48">{heroProduct.shortBenefit}</span>
+                </div>
+              )}
 
               <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-[#5B755D]/20 shadow-sm text-xs font-bold text-[#171A18] flex items-center gap-1.5">
                 <ShieldCheck size={14} className="text-[#5B755D]" />
                 <span>7-Day Replacement</span>
-              </div>
-
-              <div className="absolute bottom-4 left-4 right-4 sm:right-auto bg-[#1F3524]/90 backdrop-blur-md text-white px-4 py-2 rounded-2xl border border-white/20 shadow-lg text-xs flex items-center gap-2.5">
-                <span className="w-2 h-2 rounded-full bg-[#7CE28E] animate-ping" />
-                <span className="font-medium">
-                  Verified Purchase: <strong>Usman T.</strong> in Lahore just ordered
-                </span>
               </div>
             </div>
 

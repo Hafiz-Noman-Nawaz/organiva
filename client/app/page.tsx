@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Star, ChevronDown } from 'lucide-react';
+import { ArrowRight, ChevronDown } from 'lucide-react';
 import { HeroOrganiva } from '@/components/HeroOrganiva';
 import { SpaceBentoGrid } from '@/components/SpaceBentoGrid';
 import { CatalogSection } from '@/components/CatalogSection';
@@ -36,36 +36,6 @@ async function getHomeData() {
 export default async function HomePage() {
   const { products, categories } = await getHomeData();
 
-  const reviews = [
-    {
-      name: 'Amina Siddiqui',
-      city: 'Lahore (DHA Phase 6)',
-      rating: 5,
-      date: 'September 2026',
-      title: 'The SpinTidy and OrbitSeal completely transformed my pantry.',
-      comment:
-        'Our kitchen cabinets used to be a disaster of half-open spice packets and knocked-over bottles. The SpinTidy turntable brings every single jar right to the front with one touch, and OrbitSeal reseals our snack packs instantly. Delivered in 2 days via COD.',
-    },
-    {
-      name: 'Dr. Bilal Qureshi',
-      city: 'Karachi (Clifton)',
-      rating: 5,
-      date: 'September 2026',
-      title: 'SpaceVault compression cubes recovered an entire wardrobe.',
-      comment:
-        'Living near the sea in Karachi, storing heavy winter duvets and wedding shawls usually meant musty odors or overflowing wardrobes. The vacuum cubes compressed 3 giant quilts into a tiny flat stack. Sealed airtight and dust-free.',
-    },
-    {
-      name: 'Zainab Tariq',
-      city: 'Islamabad (F-7)',
-      rating: 5,
-      date: 'September 2026',
-      title: 'MagDock is the first thing guests compliment at our door.',
-      comment:
-        'The combination of solid walnut wood and architectural steel looks like a $150 designer piece from an upscale boutique. The magnetic key hold on the underside has a super satisfying snap. We never lose our keys anymore.',
-    },
-  ];
-
   const faqs = [
     {
       q: 'How does Cash on Delivery (COD) work?',
@@ -76,16 +46,16 @@ export default async function HomePage() {
       a: 'We deliver within 2 to 4 business days nationwide across Lahore, Karachi, Islamabad, Rawalpindi, Faisalabad, Peshawar, Multan, and all other cities.',
     },
     {
-      q: 'What is Organiva’s 7-Day Replacement Guarantee?',
+      q: "What is Organiva's 7-Day Replacement Guarantee?",
       a: 'If your product arrives damaged, defective, or not working as expected, simply WhatsApp our team at +92 315 6251281 with a photo/video within 7 days. We will ship a brand-new replacement unit with zero hassle.',
     },
     {
-      q: 'Are Organiva organizers easy to install without tools or drilling?',
-      a: 'Yes. Most of our systems (like the SpinTidy turntable, OrbitSeal fridge dock, CableGrid magnetic hub, and AeroGlow sensor light) require zero drilling and use heavy-duty non-damaging adhesive or high-grade magnets.',
+      q: 'Are Organiva products easy to install without tools or drilling?',
+      a: 'Yes. Most of our smart home systems require zero drilling and use heavy-duty non-damaging adhesive or high-grade magnets for tool-free installation.',
     },
     {
       q: 'Can I purchase coordinating room bundles for better savings?',
-      a: 'Absolutely. We offer curated room reset sets for pantries, wardrobes, and entryways with up to 25% instant bundle savings and free express delivery across Pakistan.',
+      a: 'Absolutely. We offer curated room reset sets for kitchens, wardrobes, and entryways with up to 25% instant bundle savings and free express delivery across Pakistan.',
     },
   ];
 
@@ -111,10 +81,10 @@ export default async function HomePage() {
       {/* 6. COORDINATED ROOM RESET BUNDLES */}
       <BundleSection products={products} />
 
-      {/* 7. VERIFIED REVIEWS */}
+      {/* 7. CUSTOMER REVIEWS — populated from product reviews in the database */}
       <section className="py-20 bg-white border-y border-[#5B755D]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14">
+          <div className="text-center max-w-2xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-widest text-[#5B755D] bg-[#EBF1EB] px-3.5 py-1 rounded-full border border-[#5B755D]/20">
               Verified Homeowners
             </span>
@@ -124,44 +94,9 @@ export default async function HomePage() {
             <p className="text-sm text-[#525B54] mt-2">
               Real verified customers who replaced visual clutter with intentional, lasting organization.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {reviews.map((rev, i) => (
-              <div
-                key={i}
-                className="p-6 rounded-2xl bg-[#FAF8F5] border border-[#5B755D]/15 flex flex-col justify-between hover:border-[#5B755D]/35 transition-colors"
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex text-[#D97706]">
-                      {[...Array(rev.rating)].map((_, idx) => (
-                        <Star key={idx} size={14} fill="currentColor" />
-                      ))}
-                    </div>
-                    <span className="text-[11px] text-[#7F8681]">{rev.date}</span>
-                  </div>
-
-                  <h4 className="text-sm font-bold text-[#171A18] leading-snug">
-                    "{rev.title}"
-                  </h4>
-
-                  <p className="text-xs text-[#525B54] mt-2 leading-relaxed">
-                    {rev.comment}
-                  </p>
-                </div>
-
-                <div className="mt-6 pt-4 border-t border-[#5B755D]/10 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-[#171A18] block">{rev.name}</span>
-                    <span className="text-[11px] text-[#7F8681]">{rev.city}</span>
-                  </div>
-                  <span className="text-[10px] bg-[#EBF1EB] text-[#435845] font-bold px-2 py-0.5 rounded-full border border-[#5B755D]/20">
-                    Verified Customer
-                  </span>
-                </div>
-              </div>
-            ))}
+            <p className="text-xs text-[#7F8681] mt-6">
+              Customer reviews will appear here once verified orders start arriving.
+            </p>
           </div>
         </div>
       </section>

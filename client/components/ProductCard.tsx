@@ -25,7 +25,7 @@ export const ProductCard = ({ product }: { product: ProductProps }) => {
 
   const displayPrice = product.salePrice && product.salePrice > 0 ? product.salePrice : product.price;
   const originalPrice = product.salePrice && product.salePrice > 0 ? product.price : null;
-  const imageSrc = product.images && product.images.length > 0 ? product.images[0] : '/images/products/orbitseal-main.webp';
+  const imageSrc = product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder-product.svg';
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();

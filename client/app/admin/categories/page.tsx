@@ -18,16 +18,7 @@ import {
 import { api } from '@/lib/api';
 import { CloudinaryUploader } from '@/components/CloudinaryUploader';
 
-const PRESET_IMAGES = [
-  { label: 'Kitchen (SpinTidy)', url: '/images/products/spintidy-main.webp' },
-  { label: 'Closet (SpaceVault)', url: '/images/products/spacevault-main.webp' },
-  { label: 'Living (MagDock)', url: '/images/products/magdock-main.webp' },
-  { label: 'Pantry (OrbitSeal)', url: '/images/products/orbitseal-main.webp' },
-  { label: 'Desk (CableGrid)', url: '/images/products/cablegrid-main.webp' },
-  { label: 'Car (AutoGrip)', url: '/images/products/autogrip-main.webp' },
-  { label: 'Sensor Light (AeroGlow)', url: '/images/products/aeroglow-main.webp' },
-  { label: 'Dispenser (CleanPress)', url: '/images/products/cleanpress-main.webp' },
-];
+const PRESET_IMAGES: { label: string; url: string }[] = [];
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);

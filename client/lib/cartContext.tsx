@@ -94,7 +94,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addToCart = (product: any, quantity = 1) => {
     const finalPrice = product.salePrice && product.salePrice > 0 ? product.salePrice : product.price;
-    const image = product.images && product.images.length > 0 ? product.images[0] : (product.image || '/images/products/orbitseal-main.webp');
+    const image = product.images && product.images.length > 0 ? product.images[0] : (product.image || '/images/placeholder-product.svg');
     const id = product._id || product.productId || product.slug;
 
     setCart((prev) => {

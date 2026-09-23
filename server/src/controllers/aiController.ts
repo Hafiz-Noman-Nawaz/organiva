@@ -27,17 +27,7 @@ export const askAiConcierge = async (req: Request, res: Response): Promise<void>
       success: true,
       query: req.body?.query || req.body?.message || '',
       answer: 'Assalam-o-alaikum! Welcome to Organiva. I am Orgi, your home organization AI companion. We offer smart problem-solving products for your kitchen, living room, wardrobe, and car, with nationwide delivery and Cash on Delivery. How can I help you organize today?',
-      recommendedProducts: [
-        {
-          title: 'OrbitSeal Pro - Precision Thermal Sealer & Cutter',
-          slug: 'orbitseal-pro',
-          price: 3800,
-          salePrice: 2899,
-          shortBenefit: 'Locks in freshness for chips, spices, and pulses in 1 second',
-          images: ['https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?q=80&w=800&auto=format&fit=crop'],
-          stockStatus: 'IN_STOCK',
-        },
-      ],
+      recommendedProducts: [],
     });
   }
 };

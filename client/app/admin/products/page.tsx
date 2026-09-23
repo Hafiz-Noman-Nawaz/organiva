@@ -58,9 +58,7 @@ export default function AdminProductsPage() {
   const [productToDelete, setProductToDelete] = useState<any | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Purge Demo Modal
-  const [showPurgeModal, setShowPurgeModal] = useState(false);
-  const [purgeLoading, setPurgeLoading] = useState(false);
+
 
   // Form State
   const [title, setTitle] = useState('');
@@ -274,7 +272,7 @@ export default function AdminProductsPage() {
     const cleanBenefits = benefits.filter((b) => b.title.trim() && b.description.trim());
     const cleanSpecs = specifications.filter((s) => s.key.trim() && s.value.trim());
 
-    const finalImages = images.length > 0 ? images : ['/images/products/orbitseal-main.webp'];
+    const finalImages = images.length > 0 ? images : ['/images/placeholder-product.svg'];
 
     const payload = {
       title: title.trim(),
@@ -336,24 +334,7 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Purge All Demo Products
-  const handlePurgeDemoProducts = async () => {
-    setPurgeLoading(true);
-    const token = localStorage.getItem('organiva_admin_token');
-    try {
-      const res = await api.post('/products/admin/purge-samples', {}, token || undefined);
-      if (res.success) {
-        setShowPurgeModal(false);
-        fetchData();
-      } else {
-        alert(res.message || 'Failed to purge demo products');
-      }
-    } catch (e: any) {
-      alert(e.message || 'Error purging demo products');
-    } finally {
-      setPurgeLoading(false);
-    }
-  };
+
 
   // Filtered Products
   const filteredProducts = useMemo(() => {
@@ -415,14 +396,7 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex items-center gap-2.5 flex-wrap">
-          <button
-            onClick={() => setShowPurgeModal(true)}
-            title="Clear initial demo products in 1 click"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 font-bold text-xs border border-red-200 transition-all cursor-pointer"
-          >
-            <Trash2 size={14} />
-            <span>Clear Demo Products</span>
-          </button>
+
 
           <button
             onClick={openCreateModal}
@@ -567,7 +541,7 @@ export default function AdminProductsPage() {
                         <div className="flex items-center gap-3">
                           <div className="w-11 h-11 rounded-xl overflow-hidden bg-[#FAF8F5] border border-gray-100 shrink-0 relative shadow-2xs">
                             <Image
-                              src={p.images?.[0] || '/images/products/orbitseal-main.webp'}
+                              src={p.images?.[0] || '/images/placeholder-product.svg'}
                               alt=""
                               fill
                               sizes="44px"
@@ -686,7 +660,7 @@ export default function AdminProductsPage() {
             <div className="p-3 bg-[#FAF8F5] rounded-xl border border-gray-200 flex items-center gap-3">
               <div className="w-12 h-12 rounded-lg overflow-hidden relative bg-white shrink-0 border border-gray-200">
                 <Image
-                  src={productToDelete.images?.[0] || '/images/products/orbitseal-main.webp'}
+                  src={productToDelete.images?.[0] || '/images/placeholder-product.svg'}
                   alt=""
                   fill
                   className="object-cover"
@@ -737,55 +711,7 @@ export default function AdminProductsPage() {
         </div>
       )}
 
-      {/* Purge Demo Products Modal */}
-      {showPurgeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-red-200 space-y-4">
-            <div className="flex items-center gap-3 text-red-600">
-              <div className="w-10 h-10 rounded-full bg-red-50 border border-red-200 flex items-center justify-center shrink-0">
-                <ShieldAlert size={22} />
-              </div>
-              <div>
-                <h3 className="text-base font-extrabold text-[#171A18]">Purge All Demo Products?</h3>
-                <span className="text-xs text-[#7F8681]">Start fresh with a 100% clean catalog</span>
-              </div>
-            </div>
 
-            <p className="text-xs text-[#525B54] leading-relaxed">
-              This will permanently delete the 8 sample demo items (OrbitSeal, SpinTidy, SpaceVault, MagDock, CleanPress, AeroGlow, AutoGrip, CableGrid) so that only the real products you upload remain.
-            </p>
-
-            <div className="pt-3 border-t border-gray-100 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                disabled={purgeLoading}
-                onClick={() => setShowPurgeModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-gray-600 hover:bg-gray-100 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                disabled={purgeLoading}
-                onClick={handlePurgeDemoProducts}
-                className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-md transition-all inline-flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-              >
-                {purgeLoading ? (
-                  <>
-                    <Loader2 size={13} className="animate-spin" />
-                    <span>Purging Demo Products...</span>
-                  </>
-                ) : (
-                  <>
-                    <Trash2 size={14} />
-                    <span>Confirm & Purge All Demo Items</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Comprehensive Add / Edit Product Modal */}
       {showModal && (

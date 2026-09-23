@@ -16,7 +16,7 @@ export const ProductPageClient = ({ product }: { product: any }) => {
 
   const images = product.images && product.images.length > 0
     ? product.images
-    : ['/images/products/orbitseal-main.webp'];
+    : ['/images/placeholder-product.svg'];
 
   const displayPrice = product.salePrice && product.salePrice > 0 ? product.salePrice : product.price;
   const originalPrice = product.salePrice && product.salePrice > 0 ? product.price : null;

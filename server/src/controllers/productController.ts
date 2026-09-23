@@ -203,43 +203,6 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
   }
 };
 
-// Admin: Purge initial demo/sample products in 1 click
-export const purgeDemoProducts = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const demoSlugs = [
-      'orbitseal-magnetic-bag-resealer',
-      'spintidy-360-turntable-organizer',
-      'spacevault-vacuum-storage-cubes',
-      'magdock-floating-key-dock',
-      'cleanpress-kitchen-soap-dispenser',
-      'aeroglow-motion-sensor-light',
-      'autogrip-magsafe-car-mount',
-      'cablegrid-magnetic-cord-organizer',
-    ];
-
-    // Find all demo products
-    const demoProds = await Product.find({ slug: { $in: demoSlugs } });
-    const demoIds = demoProds.map((p) => p._id);
-
-    if (demoIds.length > 0) {
-      await Promise.all([
-        Product.deleteMany({ _id: { $in: demoIds } }),
-        KnowledgeDocument.deleteMany({ productRef: { $in: demoIds } }),
-        Review.deleteMany({ product: { $in: demoIds } }),
-        Inventory.deleteMany({ product: { $in: demoIds } }).catch(() => {}),
-      ]);
-    }
-
-    res.json({
-      success: true,
-      message: `Successfully purged ${demoIds.length} demo products. Your catalog is now clean for real products.`,
-      purgedCount: demoIds.length,
-    });
-  } catch (error: any) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
-
 // Helper to resolve product by ID or Slug
 const resolveProduct = async (idOrSlug: string) => {
   if (mongoose.Types.ObjectId.isValid(idOrSlug)) {
@@ -265,7 +228,7 @@ export const getProductReviews = async (req: Request, res: Response): Promise<vo
 
     const count = reviews.length;
     const averageRating = count > 0
-      ? Number((reviews.reduce((acc, r) => acc + r.rating, 0) / count).toFixed(1))
+      ? Number((reviews.reduce((acc: number, r: any) => acc + r.rating, 0) / count).toFixed(1))
       : 5.0;
 
     res.json({
@@ -315,7 +278,7 @@ export const submitProductReview = async (req: Request, res: Response): Promise<
     const allApproved = await Review.find({ product: product._id, isApproved: true });
     product.reviewCount = allApproved.length;
     product.rating = Number(
-      (allApproved.reduce((acc, r) => acc + r.rating, 0) / allApproved.length).toFixed(1)
+      (allApproved.reduce((acc: number, r: any) => acc + r.rating, 0) / allApproved.length).toFixed(1)
     );
     await product.save();
 

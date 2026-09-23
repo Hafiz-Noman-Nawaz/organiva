@@ -379,16 +379,22 @@ RULES:
     );
 
     if (matchedProducts.length === 0) {
-      if (q.includes('fresh') || q.includes('seal') || q.includes('snack') || q.includes('food') || q.includes('kitchen') || q.includes('chip')) {
-        matchedProducts = allProducts.filter((p) => p.slug.includes('orbitseal'));
-      } else if (q.includes('cable') || q.includes('wire') || q.includes('desk') || q.includes('workspace')) {
-        matchedProducts = allProducts.filter((p) => p.slug.includes('cablegrid'));
-      } else if (q.includes('car') || q.includes('phone holder') || q.includes('magsafe') || q.includes('charge')) {
-        matchedProducts = allProducts.filter((p) => p.slug.includes('autogrip'));
-      } else if (q.includes('light') || q.includes('closet') || q.includes('sensor') || q.includes('cabinet')) {
-        matchedProducts = allProducts.filter((p) => p.slug.includes('aeroglow'));
-      } else if (q.includes('trash') || q.includes('sink') || q.includes('soap') || q.includes('clean')) {
-        matchedProducts = allProducts.filter((p) => p.slug.includes('cleanpress'));
+      // Try category-based keyword matching dynamically
+      const categoryKeywords: Record<string, string[]> = {
+        kitchen: ['fresh', 'seal', 'snack', 'food', 'kitchen', 'chip', 'pantry', 'spice', 'cook'],
+        workspace: ['cable', 'wire', 'desk', 'workspace', 'office', 'cord', 'charging'],
+        car: ['car', 'phone holder', 'magsafe', 'charge', 'mount', 'drive', 'travel'],
+        closet: ['light', 'closet', 'sensor', 'cabinet', 'wardrobe', 'clothes', 'storage'],
+      };
+
+      for (const [category, keywords] of Object.entries(categoryKeywords)) {
+        if (keywords.some(kw => q.includes(kw))) {
+          matchedProducts = allProducts.filter((p) => {
+            const pCat = (p.category?.slug || '').toLowerCase();
+            return pCat.includes(category);
+          });
+          if (matchedProducts.length > 0) break;
+        }
       }
     }
 

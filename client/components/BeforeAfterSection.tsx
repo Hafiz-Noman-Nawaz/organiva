@@ -12,22 +12,22 @@ export const BeforeAfterSection = () => {
       space: 'Kitchen & Groceries',
       before: {
         title: 'Floppy Clips & Stale Food',
-        desc: 'Plastic clips that snap after 2 weeks, rubber bands popping off, and soggy biscuits or stale chips within 24 hours.',
+        desc: 'Plastic clips that snap after 2 weeks, rubber bands popping off, and soggy biscuits or stale chips within 24 hours of opening.',
       },
       after: {
-        title: 'Instant 2s Hermetic Seal',
-        desc: 'Airtight micro-heat welds lock in factory crispness. Docks magnetically to your fridge so it is never misplaced.',
+        title: 'Fresh & Organized Pantry',
+        desc: 'Purpose-built kitchen systems that keep food fresh, spices accessible, and countertops clutter-free for weeks on end.',
       },
     },
     {
       space: 'Deep Pantry Shelves',
       before: {
         title: 'Dark Corners & Knocked Over Jars',
-        desc: 'Reaching into deep cabinets, knocking over turmeric or oil bottles, and buying duplicate spices you couldn’t see.',
+        desc: 'Reaching into deep cabinets, knocking over turmeric or oil bottles, and buying duplicate spices you couldn\'t see.',
       },
       after: {
-        title: '360° Smooth Rotation',
-        desc: 'A gentle flick of a finger brings back-row jars and bottles directly forward with stainless steel ball bearings.',
+        title: 'Everything Within Reach',
+        desc: 'Smart rotating organizers and tiered shelving systems bring every item forward instantly — no more forgotten corners.',
       },
     },
     {
@@ -37,8 +37,8 @@ export const BeforeAfterSection = () => {
         desc: 'Heavy winter blankets and wedding garments monopolizing 80% of wardrobe space and gathering closet dust.',
       },
       after: {
-        title: '80% Volume Recovery',
-        desc: 'Triple-sealed vacuum compression cubes shrink bulky textiles flat, protected from humidity, dust, and insects.',
+        title: 'Reclaimed Space & Protection',
+        desc: 'Compression storage and smart lighting solutions recover wasted closet space and protect your belongings from moisture and dust.',
       },
     },
     {
@@ -48,8 +48,8 @@ export const BeforeAfterSection = () => {
         desc: 'Charging cables sliding off desk edges every time you unplug your phone, forcing you to fish them from the floor.',
       },
       after: {
-        title: 'Magnetic Cable Anchors',
-        desc: 'Weighted aluminum hub keeps USB-C, laptop, and phone cables snapped neatly in line, ready with a one-hand pull.',
+        title: 'Clean, Anchored Cables',
+        desc: 'Magnetic cable management systems keep every cord snapped neatly in place, ready with a one-hand pull whenever you need them.',
       },
     },
   ];

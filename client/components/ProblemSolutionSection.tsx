@@ -17,25 +17,25 @@ export const ProblemSolutionSection = ({
     {
       number: '01',
       title: 'EASY TO USE',
-      description: 'One-touch operation. Reseals any snack or frozen bag in 2 seconds with zero pre-heating time.',
+      description: 'One-touch operation. No complicated setup, no tools, no manuals — just open and start using immediately.',
       icon: Sparkles,
     },
     {
       number: '02',
       title: 'SAVES TIME & MONEY',
-      description: 'Never throw away stale chips, biscuits, or dry pantry ingredients again. Locks freshness for weeks.',
+      description: 'Stop replacing cheap products that break. Organiva systems are built to last and eliminate recurring waste.',
       icon: Clock,
     },
     {
       number: '03',
-      title: 'USB-C RECHARGEABLE',
-      description: 'Zero disposable batteries. One 45-minute charge delivers over 120 airtight heat seals.',
+      title: 'SUSTAINABLE & RECHARGEABLE',
+      description: 'No disposable batteries or single-use parts. Designed for years of reliable daily use.',
       icon: Repeat,
     },
     {
       number: '04',
       title: 'BUILT FOR EVERYDAY LIFE',
-      description: 'Magnetic rear dock snaps straight onto your refrigerator door so it never gets lost in kitchen drawers.',
+      description: 'Engineered for real Pakistani households — humidity-resistant, durable, and designed to fit your existing spaces.',
       icon: HeartHandshake,
     },
   ];
@@ -72,7 +72,7 @@ export const ProblemSolutionSection = ({
               </h3>
               <p className="text-sm text-[#525B54] leading-relaxed">
                 {problemStatement ||
-                  'You buy fresh chips or snacks, eat half, and try to seal them with flimsy plastic bag clips that snap after two weeks. In Pakistani summer humidity, snacks turn soggy within hours and go straight into the trash.'}
+                  'You buy everyday items, struggle with them constantly, and eventually throw them out because they break, leak, or simply don\'t work as expected. Sound familiar?'}
               </p>
             </div>
 
@@ -104,7 +104,7 @@ export const ProblemSolutionSection = ({
               </h3>
               <p className="text-sm text-[#CAD3CA] leading-relaxed">
                 {solutionStatement ||
-                  "Organiva OrbitSeal glides across any bag with a micro-ceramic heat strip to weld it completely airtight. Snacks stay crisp for weeks, and the built-in cutter opens bags cleanly without tearing."}
+                  "Organiva products are purpose-engineered to solve one specific problem permanently. Smart materials, thoughtful design, and a 7-day replacement guarantee mean you never go back to the old way."}
               </p>
             </div>
 
