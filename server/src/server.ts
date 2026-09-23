@@ -14,6 +14,7 @@ import paymentRoutes from './routes/paymentRoutes';
 import aiRoutes from './routes/aiRoutes';
 import adminRoutes from './routes/adminRoutes';
 import uploadRoutes from './routes/uploadRoutes';
+import telemetryRoutes from './routes/telemetryRoutes';
 import { autoSeedIfEmpty } from './scripts/seed';
 
 // Prevent any external third-party SDK or stream error from crashing the server
@@ -132,6 +133,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/telemetry', telemetryRoutes);
 
 // Error handling middleware
 app.use(errorHandler);

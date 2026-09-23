@@ -71,7 +71,8 @@ export const AnalyticsDashboard: React.FC = () => {
 
   // Extract selected series
   const activeSeries: number[] = chart[activeMetric] || [];
-  const maxVal = Math.max(...activeSeries, 1);
+  const actualPeak = activeSeries.length > 0 ? Math.max(...activeSeries) : 0;
+  const maxVal = Math.max(actualPeak, 1);
   const minVal = 0;
 
   // Build SVG Points for smooth area curve
@@ -252,7 +253,7 @@ export const AnalyticsDashboard: React.FC = () => {
             </span>
           </span>
           <span className="text-xs font-bold text-[#5B755D]">
-            Peak: {activeMetric === 'revenue' ? `PKR ${maxVal.toLocaleString()}` : maxVal.toLocaleString()}
+            Peak: {activeMetric === 'revenue' ? `PKR ${actualPeak.toLocaleString()}` : actualPeak.toLocaleString()}
           </span>
         </div>
 
@@ -340,22 +341,35 @@ export const AnalyticsDashboard: React.FC = () => {
           <div>
             <div className="flex justify-between text-[11px] text-[#525B54] mb-1">
               <span>Top Funnel (Impressions)</span>
-              <strong>100%</strong>
+              <strong>{summary.totalImpressions > 0 ? '100%' : '0%'}</strong>
             </div>
             <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
-              <div className="h-full bg-[#5B755D] rounded-full w-full" />
+              <div
+                className="h-full bg-[#5B755D] rounded-full transition-all"
+                style={{ width: summary.totalImpressions > 0 ? '100%' : '0%' }}
+              />
             </div>
           </div>
 
           <div>
             <div className="flex justify-between text-[11px] text-[#525B54] mb-1">
               <span>Mid Funnel (Product Clicks)</span>
-              <strong>{((summary.totalClicks / (summary.totalImpressions || 1)) * 100).toFixed(1)}%</strong>
+              <strong>
+                {summary.totalImpressions > 0
+                  ? `${((summary.totalClicks / summary.totalImpressions) * 100).toFixed(1)}%`
+                  : '0.0%'}
+              </strong>
             </div>
             <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
               <div
                 className="h-full bg-[#8EB892] rounded-full transition-all"
-                style={{ width: `${Math.min(100, Math.max(10, (summary.totalClicks / (summary.totalImpressions || 1)) * 100))}%` }}
+                style={{
+                  width: `${
+                    summary.totalImpressions > 0
+                      ? Math.min(100, (summary.totalClicks / summary.totalImpressions) * 100)
+                      : 0
+                  }%`,
+                }}
               />
             </div>
           </div>
@@ -368,7 +382,13 @@ export const AnalyticsDashboard: React.FC = () => {
             <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
               <div
                 className="h-full bg-[#2E7D32] rounded-full transition-all"
-                style={{ width: `${Math.min(100, Math.max(5, summary.conversionRate * 3))}%` }}
+                style={{
+                  width: `${
+                    summary.totalClicks > 0 || summary.totalImpressions > 0
+                      ? Math.min(100, summary.conversionRate)
+                      : 0
+                  }%`,
+                }}
               />
             </div>
           </div>

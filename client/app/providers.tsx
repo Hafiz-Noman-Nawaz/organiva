@@ -9,6 +9,7 @@ import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { CartDrawer } from '@/components/CartDrawer';
 import { OrgiChatWidget } from '@/components/OrgiChatWidget';
+import { TelemetryTracker } from '@/components/TelemetryTracker';
 
 function ThemedClickSpark({ children }: { children: React.ReactNode }) {
   const { isDark } = useTheme();
@@ -42,6 +43,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
           {/* Floating Orgi Chatbot Launcher & Non-blocking Floating Dock */}
           {!isAdminRoute && <OrgiChatWidget />}
+
+          {/* Real-time Customer Telemetry Tracker */}
+          {!isAdminRoute && <TelemetryTracker />}
         </CartProvider>
       </ThemedClickSpark>
     </ThemeProvider>
